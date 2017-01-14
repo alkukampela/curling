@@ -59,9 +59,9 @@ const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
 const render = (delivery, stones, element) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
-  const renderer = Render.create({ element, engine });
-  Engine.run(engine);
-  Render.run(render);
+  const renderer = Render.create({ element, engine })
+  Engine.run(engine)
+  Render.run(render)
 }
 
 const simulate = (delivery, stones) => {
