@@ -23,12 +23,49 @@ PROP_STONES_IN_END = 'stones_in_end'
 PROP_TOTAL_ENDS = 'total_ends'
 PROP_STONES_THROWN = 'stones_thrown'
 PROP_END_SCORES = 'end_scores'
-
+PROP_TEAM = 'team'
 
 @app.route('/devapi/create')
 def create_game():
+    game = get_new_game(generate_new_id())
+
+    team_red_jwt = generate_jwt(game[PROP_GAME_ID], RED_TEAM)
+    team_yellow_jwt = generate_jwt(game[PROP_GAME_ID], YELLOW_TEAM)    
+    
+    resp = str(json.dumps(game)) + '\n\n\n'
+    resp += str(team_red_jwt) + '\n'
+    resp += str(team_yellow_jwt) + '\n'
+
+    return Response(
+        response=resp,
+        status=200,
+        mimetype='text/plain')
+
+
+
+@app.route('/api/get_status/<jwt_token>')
+def status_for_delivery(jwt_token):
+    try:
+        response_data = jwt.decode(jwt_token, SECRET, algorithms=['HS256'])
+    except:
+        return Response(status = 400)
+
+
+    
+
+
+    return Response(
+        response=json.dumps(response_data),
+        status=200,
+        mimetype='text/plain')
+
+
+
+
+
+def get_new_game(game_id):
     game = {}
-    game[PROP_GAME_ID] = generate_new_id()
+    game[PROP_GAME_ID] = game_id
     
     teams = {}
     teams[RED_TEAM] = 'Sorsa-Sepot'
@@ -45,33 +82,31 @@ def create_game():
     game[PROP_STONES_THROWN] = stones_thrown
 
     game[PROP_END_SCORES] = []
-
-
-
-    
-
-
-    return Response(
-        response=json.dumps(game),
-        status=200,
-        mimetype='text/plain')
+    return game
 
 
 
 
 
 
-@app.route('/encode/<muumio>')
-def encode(muumio):
-    id = get_new_id()
-    data = {'muumio': muumio, 'u': id}
-    print(data)
-    encoded = jwt.encode(data, SECRET, algorithm='HS256')
 
-    return Response(
-        response=encoded,
-        status=200,
-        mimetype='text/plain')
+
+
+
+
+
+
+
+
+
+
+
+
+def generate_jwt(game_id, team):
+    jwt_content = {}
+    jwt_content[PROP_GAME_ID] = game_id
+    jwt_content[PROP_TEAM] = team
+    return jwt.encode(jwt_content, SECRET, algorithm='HS256')
 
 
 

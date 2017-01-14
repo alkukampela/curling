@@ -6,7 +6,7 @@ services:
       context: '.'
       dockerfile: Dockerfile-dev
     ports:
-     - '9500:5000'
+     - '9600:5000'
     volumes:
      - '.:/code'
     environment:
