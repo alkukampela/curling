@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  results:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
+    ports:
+      - '80:5000'
+    volumes:
+      - '.:/app'
