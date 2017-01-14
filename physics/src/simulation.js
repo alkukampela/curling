@@ -1,7 +1,7 @@
 import Matter from 'matter-js'
 const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 
-const FRICTION = 0.1
+const FRICTION = 0.125
 const RADIUS = 5
 
 // Stones out of bounds are removed from the sheet.
@@ -36,6 +36,14 @@ const createEngine = matterStones => {
   const engine = Engine.create()
   engine.world.gravity = Vector.create(0, 0)
   World.add(engine.world, matterStones)
+
+  // Remove items that are out of bounds
+  Events.on(engine, 'afterUpdate', () => {
+    engine.world.bodies
+      .filter(isOutOfBounds)
+      .forEach(stone => World.remove(engine.world, stone))
+  })
+
   return engine
 }
 
@@ -48,8 +56,12 @@ const stoneToJson = stone => {
 const isOutOfBounds = stone => !Bounds.overlaps(stone.bounds, BOUNDS)
 const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
 
-const render = (delivery, stones) => {
-  // TODO frontend rendering
+const render = (delivery, stones, element) => {
+  const matterStones = createStones(delivery, stones)
+  const engine = createEngine(matterStones)
+  const renderer = Render.create({ element, engine });
+  Engine.run(engine);
+  Render.run(render);
 }
 
 const simulate = (delivery, stones) => {
@@ -58,15 +70,9 @@ const simulate = (delivery, stones) => {
   const world = engine.world
 
   while (world.bodies.length > 0 && world.bodies.some(isMoving)) {
-    // Update matter simulation
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
     Engine.update(engine, engine.timing.delta)
     Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp })
-
-    // Remove items that are out of bounds
-    world.bodies
-      .filter(isOutOfBounds)
-      .forEach(stone => World.remove(world, stone))
   }
 
   return world.bodies.map(stoneToJson)
