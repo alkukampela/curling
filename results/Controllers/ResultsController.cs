@@ -24,6 +24,22 @@ using Newtonsoft.Json;
 //     }
 // ]
 
+// api/results/{gameId}
+// {
+//     "game_id": "86b1474",
+//     "teams": {
+//         "team_1": "Sorsa-Sepot",
+//         "team_2": "Paha-Kalevit"
+//     },
+//     "stones_in_end": 5,
+//     "total_ends": 4,
+//     "stones_thrown": {
+//         "team_1": 0,
+//         "team_2": 0
+//     },
+//     "end_scores": []
+// }
+
 namespace results.Controllers
 {
     // Dummy class for random test api
@@ -87,9 +103,35 @@ namespace results.Controllers
         }
 
         [HttpGet("{gameId}")]
-        public string Get(string gameId)
+        public async Task<IActionResult> Get(string gameId)
         {
-            return String.Format("Got, {0}", gameId);
+            var user = await this.FetchGame(gameId);
+            var game = new GameModel()
+            {
+                Game_id = user.id.ToString(),
+                Team_1 = user.name,
+                Team_2 = user.username
+            };
+            return Json(game);
+        }
+
+        private async Task<UserModel> FetchGame(string gameId)
+        {
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    client.BaseAddress = new Uri(API_ENDPOINT);
+                    var response = await client.GetAsync("/users/" + gameId);
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<UserModel>(stringResponse);
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine(e);
+                    return new UserModel();
+                }
+            }
         }
     }
 }
