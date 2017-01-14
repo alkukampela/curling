@@ -8,13 +8,16 @@ const RADIUS = 5
 // The simulation is stopped when there are either no stones
 // inside bounds or all the stones are slower than MIN_SPEED.
 const BOUNDS = {
-  min: { x: 0, y: 0 },
-  max: { x: 800, y: 600 },
+  min: { x: -50, y: -500 },
+  max: { x: 50, y: 100 },
 }
-const MIN_SPEED = 0.001
+const MIN_SPEED = 0.0001
 
-// TODO mathematics
-const getVelocity = (speed, angle) => Vector.create(0, 10)
+const getVelocity = (speed, angle) => {
+  const vx = speed * Math.cos(angle * Math.PI/180)
+  const vy = speed * Math.cos((90 - angle) * Math.PI/180)
+  return Vector.create(vx, vy)
+}
 
 const createStone = (x, y, team) => {
   const stone = Bodies.circle(x, y, RADIUS, { frictionAir: FRICTION })
@@ -24,7 +27,7 @@ const createStone = (x, y, team) => {
 
 const createStones = (delivery, stones) => {
   const stationary = stones.map(s => createStone(s.x, s.y, s.team))
-  const delivered = createStone(delivery.start_x, 0, delivery.team)
+  const delivered = createStone(delivery.start_x, BOUNDS.min.y, delivery.team)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
   return [delivered, ...stationary]
 }
