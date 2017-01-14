@@ -21,3 +21,13 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     labels:
       - "traefik.backend=gateway"
+
+  physics:
+    build:
+      context: ./physics
+    volumes:
+      - "./physics:/app"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/simulate"
+      - "traefik.port=3005"
+      - "traefik.backend=physics"
