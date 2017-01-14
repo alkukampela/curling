@@ -105,14 +105,21 @@ namespace results.Controllers
         [HttpGet("{gameId}")]
         public async Task<IActionResult> Get(string gameId)
         {
-            var user = await this.FetchGame(gameId);
-            var game = new GameModel()
+            try
             {
-                Game_id = user.id.ToString(),
-                Team_1 = user.name,
-                Team_2 = user.username
-            };
-            return Json(game);
+                var user = await this.FetchGame(gameId);
+                var game = new GameModel()
+                {
+                    Game_id = user.id.ToString(),
+                    Team_1 = user.name,
+                    Team_2 = user.username
+                };
+                return Json(game);
+            }
+            catch (ArgumentException e)
+            {
+                return StatusCode(404);
+            }
         }
 
         private async Task<UserModel> FetchGame(string gameId)
@@ -123,8 +130,15 @@ namespace results.Controllers
                 {
                     client.BaseAddress = new Uri(API_ENDPOINT);
                     var response = await client.GetAsync("/users/" + gameId);
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<UserModel>(stringResponse);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var stringResponse = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<UserModel>(stringResponse);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid gameId " + gameId);
+                    }
                 }
                 catch (HttpRequestException e)
                 {
