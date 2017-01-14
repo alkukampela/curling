@@ -44,7 +44,7 @@ services:
       - "./gamemanager:/code"
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
-      - "traefik.port=9600"
+      - "traefik.port=5000"
       - "traefik.backend=gamemanager"
 
   gateway:

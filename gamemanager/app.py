@@ -31,7 +31,9 @@ PROP_LAST_STONE = 'last_stone'
 
 @app.route('/dev/create')
 def create_game():
-    game = get_new_game(generate_new_id())
+    game_id = generate_new_id()
+    game = get_new_game(game_id)
+    create_game(game_id, game)
 
     team_red_jwt = generate_jwt(game[PROP_GAME_ID], RED_TEAM)
     team_yellow_jwt = generate_jwt(game[PROP_GAME_ID], YELLOW_TEAM)
@@ -39,6 +41,7 @@ def create_game():
     resp = str(json.dumps(game)) + '\n\n\n'
     resp += str(team_red_jwt) + '\n'
     resp += str(team_yellow_jwt) + '\n'
+
 
     return Response(
         response=resp,
@@ -53,8 +56,7 @@ def get_game_status(jwt_token):
     except:
         return Response(status=400)
 
-    # TODO: call data service
-    game = get_new_game(response_data[PROP_GAME_ID])
+    game = get_game(response_data[PROP_GAME_ID])
 
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
@@ -70,8 +72,7 @@ def get_game_status(jwt_token):
 
 @app.route('/check_in_delivery/<game_id>', methods=['POST'])
 def check_in_delivery(game_id):
-    # TODO: call data service
-    game = get_new_game(game_id)
+    game = get_game(game_id)
 
     team_that_delivered = game[PROP_DELIVERY_TURN]
 
@@ -89,7 +90,7 @@ def save_end_score(game_id):
     print(end_score)
 
     # TODO: call data service
-    game = get_new_game(game_id)
+    game = get_game(game_id)
 
     game[PROP_END_SCORES].append(end_score)
     game[PROP_TOTAL_SCORE][RED_TEAM] += end_score[RED_TEAM]
@@ -176,9 +177,17 @@ def generate_jwt(game_id, team):
     jwt_content[PROP_TEAM] = team
     return jwt.encode(jwt_content, SECRET, algorithm='HS256')
 
-
 def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
+
+
+def get_game(game_id):
+    response = requests.get(f'http://gateway/data-service/games/{game_id}')
+    return response.json()
+
+def create_game(game_id, game):
+    requests.post(f'http://gateway/data-service/games/{game_id}', data = game)
+
 
 
 if __name__ == '__main__':
