@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile-dev
       context: ./frontend
     ports:
-      - "80:80"
+      - "12004:80"
     volumes:
       - "./frontend:/usr/share/nginx/html"
 
@@ -62,6 +62,7 @@ services:
   gateway:
     image: traefik:v1.1.2
     ports:
+      - "80:80"
       - "8080:8080"
     volumes:
       - "./gateway/dev.toml:/etc/traefik/traefik.toml"
