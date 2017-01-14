@@ -1,6 +1,9 @@
 import Matter from 'matter-js'
 const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 
+// FIXME this is copy-paste from the physics module (except for the sprites)
+// Should share the same file.
+
 const FRICTION = 0.02
 const RADIUS = 10
 
@@ -20,7 +23,18 @@ const getVelocity = (speed, angle) => {
 }
 
 const createStone = (x, y, team) => {
-  const stone = Bodies.circle(x, y, RADIUS, { frictionAir: FRICTION })
+  const stone = Bodies.circle(x, y, RADIUS, {
+    frictionAir: FRICTION,
+    render: {
+      sprite: {
+        texture: team === '1'
+          ? 'src/assets/stone_red_turn.png'
+          : 'src/assets/stone_yellow_turn.png',
+        xScale: 0.4,
+        yScale: 0.4
+      }
+    }
+  })
   stone.team = team
   return stone
 }
@@ -70,17 +84,17 @@ const render = (delivery, stones, element) => {
     bounds: BOUNDS,
     options: {
       hasBounds: true,
-      height: 500,
-      width: 200,
+      background: 'src/assets/track_cropped.png',
+      height: 1000,
+      width: 400,
+      wireframes: false,
     }
   })
-
   Events.on(renderer, 'afterRender', () => {
     if (simulationShouldStop(world.bodies)) {
       Render.stop(renderer)
     }
   })
-
   Engine.run(engine)
   Render.run(renderer)
 }

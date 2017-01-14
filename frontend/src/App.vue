@@ -28,6 +28,37 @@ asfasf
 </template>
 
 <script>
+import { render } from './simulation'
+
+// TODO receive this via websocket and render
+const { stones, delivery } = {
+  "delivery": {
+    "team": "1",
+    "speed": 10,
+    "angle": 90,
+    "start_x": 5
+  },
+  "stones": [
+    {
+      "team": "2",
+      "x": 0,
+      "y": 100
+    },
+    {
+      "team": "1",
+      "x": -30,
+      "y": 80
+    },
+    {
+      "team": "1",
+      "x": -30,
+      "y": 0
+    }
+  ]
+}
+
+render(delivery, stones, document.body)
+
 export default {
   name: 'app',
   data () {

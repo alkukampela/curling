@@ -3,7 +3,6 @@ import App from './App.vue'
 
 import api from './api';
 
-
 new Vue({
   el: '#app',
   render: h => h(App)
