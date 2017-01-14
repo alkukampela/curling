@@ -13,7 +13,14 @@ function get(key, cb) {
   });
 }
 
+function keys(pattern, cb) {
+  return client.keys(pattern, function(err, result){
+    cb(err, result);
+  });
+}
+
 module.exports = {
   set: set,
-  get: get
+  get: get,
+  keys: keys
 }
