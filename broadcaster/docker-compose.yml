@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  server:
+    build: './server'
+    ports:
+     - '9500:5000'
+    volumes:
+     - './server:/code'
+    environment:
+     - PYTHONUNBUFFERED=0
