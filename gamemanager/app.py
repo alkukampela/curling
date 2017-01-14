@@ -27,6 +27,7 @@ PROP_END_SCORES = 'end_scores'
 PROP_TOTAL_SCORE = 'total_score'
 PROP_TEAM_WITH_HAMMER = 'team_with_hammer'
 PROP_TEAM = 'team'
+PROP_LAST_STONE = 'last_stone'
 
 @app.route('/dev/create')
 def create_game():
@@ -45,7 +46,6 @@ def create_game():
         mimetype='text/plain')
 
 
-
 @app.route('/get_game_status/<jwt_token>')
 def get_game_status(jwt_token):
     try:
@@ -59,7 +59,8 @@ def get_game_status(jwt_token):
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
     
-    # TODO check if this is last throw in end.
+    response_data[PROP_LAST_STONE] = check_for_last_stone(
+        game[PROP_STONES_DELIVERED], game[PROP_STONES_IN_END])
 
     return Response(
         response=json.dumps(response_data),
@@ -113,7 +114,6 @@ def save_end_score(game_id):
 
 
 
-
 def get_new_game(game_id):
     game = {}
     game[PROP_GAME_ID] = game_id
@@ -146,8 +146,6 @@ def get_new_game(game_id):
     return game
 
 
-
-
 def get_other_team(team):
     return YELLOW_TEAM if team == RED_TEAM else RED_TEAM
 
@@ -165,6 +163,11 @@ def get_team_with_first_delivery_turn(game):
         game[PROP_TOTAL_SCORE][RED_TEAM] != game[PROP_TOTAL_SCORE][YELLOW_TEAM]):
         return "none"
     return get_other_team(game[PROP_TEAM_WITH_HAMMER])
+
+
+def check_for_last_stone(stones_delivered, stones_in_end):
+    stones_thrown = stones_delivered[RED_TEAM] + stones_delivered[YELLOW_TEAM]
+    return stones_thrown + 1 >= stones_in_end
 
 
 def generate_jwt(game_id, team):
