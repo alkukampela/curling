@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser';
-import simulate from './simulation'
+import { simulate } from './simulation'
 
 const server = express();
 server.use(bodyParser.json());
