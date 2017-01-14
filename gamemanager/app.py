@@ -24,6 +24,7 @@ PROP_TOTAL_ENDS = 'total_ends'
 PROP_STONES_DELIVERED = 'stones_delivered'
 PROP_DELIVERY_TURN = 'delivery_turn'
 PROP_END_SCORES = 'end_scores'
+PROP_TOTAL_SCORE = 'total_score'
 PROP_TEAM_WITH_HAMMER = 'team_with_hammer'
 PROP_TEAM = 'team'
 
@@ -55,10 +56,10 @@ def get_game_status(jwt_token):
     # TODO: call data service
     game = get_new_game(response_data[PROP_GAME_ID])
 
-    
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
     
+    # TODO check if this is last throw in end.
 
     return Response(
         response=json.dumps(response_data),
@@ -79,6 +80,38 @@ def check_in_delivery(game_id):
     # TODO call data service
 
     return Response(status=200, response=json.dumps(game))
+
+
+@app.route('/save_end_score/<game_id>', methods=['POST'])
+def save_end_score(game_id):
+    end_score = request.get_json()
+    print(end_score)
+
+    # TODO: call data service
+    game = get_new_game(game_id)
+
+    game[PROP_END_SCORES].append(end_score)
+    game[PROP_TOTAL_SCORE][RED_TEAM] += end_score[RED_TEAM]
+    game[PROP_TOTAL_SCORE][YELLOW_TEAM] += end_score[YELLOW_TEAM]
+
+    # Reset delivery counter
+    game[PROP_STONES_DELIVERED][RED_TEAM] = 0
+    game[PROP_STONES_DELIVERED][YELLOW_TEAM] = 0
+    
+    # Check team that has last stone advantage
+    game[PROP_TEAM_WITH_HAMMER] = get_team_with_hammer(
+                                        game[PROP_TEAM_WITH_HAMMER], 
+                                        end_score)
+
+    # Set team that has next delivery turn
+    # Note: this will be no-one when game is ended
+    game[PROP_DELIVERY_TURN] = get_team_with_first_delivery_turn(game)
+
+    # TODO call data service
+
+    return Response(status=200)
+
+
 
 
 def get_new_game(game_id):
@@ -105,6 +138,11 @@ def get_new_game(game_id):
     game[PROP_STONES_DELIVERED] = stones_delivered
 
     game[PROP_END_SCORES] = []
+    game[PROP_TOTAL_SCORE] = {
+        RED_TEAM: 0,
+        YELLOW_TEAM: 0
+    }
+
     return game
 
 
@@ -114,6 +152,21 @@ def get_other_team(team):
     return YELLOW_TEAM if team == RED_TEAM else RED_TEAM
 
 
+def get_team_with_hammer(current_holder, end_scores):
+    if end_scores[RED_TEAM] == end_scores[YELLOW_TEAM]:
+        return current_holder
+    if end_scores[YELLOW_TEAM] > end_scores[RED_TEAM]:
+        return RED_TEAM
+    return YELLOW_TEAM
+
+
+def get_team_with_first_delivery_turn(game):
+    if (game[PROP_TOTAL_ENDS] <= game[PROP_END_SCORES].count() and
+        game[PROP_TOTAL_SCORE][RED_TEAM] != game[PROP_TOTAL_SCORE][YELLOW_TEAM]):
+        return "none"
+    return get_other_team(game[PROP_TEAM_WITH_HAMMER])
+
+
 def generate_jwt(game_id, team):
     jwt_content = {}
     jwt_content[PROP_GAME_ID] = game_id
@@ -121,10 +174,8 @@ def generate_jwt(game_id, team):
     return jwt.encode(jwt_content, SECRET, algorithm='HS256')
 
 
-
 def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
-
 
 
 if __name__ == '__main__':
