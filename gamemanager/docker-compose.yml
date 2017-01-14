@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  gamemanager:
+    build: 
+      context: '.'
+      dockerfile: Dockerfile-dev
+    ports:
+     - '9500:5000'
+    volumes:
+     - '.:/code'
+    environment:
+     - PYTHONUNBUFFERED=0
