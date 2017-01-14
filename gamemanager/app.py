@@ -27,7 +27,7 @@ PROP_END_SCORES = 'end_scores'
 PROP_TEAM_WITH_HAMMER = 'team_with_hammer'
 PROP_TEAM = 'team'
 
-@app.route('/devapi/create')
+@app.route('/dev/create')
 def create_game():
     game = get_new_game(generate_new_id())
 
@@ -45,7 +45,7 @@ def create_game():
 
 
 
-@app.route('/api/get_game_status/<jwt_token>')
+@app.route('/get_game_status/<jwt_token>')
 def get_game_status(jwt_token):
     try:
         response_data = jwt.decode(jwt_token, SECRET, algorithms=['HS256'])
@@ -55,7 +55,7 @@ def get_game_status(jwt_token):
     # TODO: call data service
     game = get_new_game(response_data[PROP_GAME_ID])
 
-    # Tarkasta heittovuoro
+    
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
     
@@ -66,7 +66,19 @@ def get_game_status(jwt_token):
         mimetype='text/plain')
 
 
+@app.route('/check_in_delivery/<game_id>', methods=['POST'])
+def check_in_delivery(game_id):
+    # TODO: call data service
+    game = get_new_game(game_id)
 
+    team_that_delivered = game[PROP_DELIVERY_TURN]
+
+    game[PROP_STONES_DELIVERED][team_that_delivered] += 1
+    game[PROP_DELIVERY_TURN] = get_other_team(team_that_delivered)
+
+    # TODO call data service
+
+    return Response(status=200, response=json.dumps(game))
 
 
 def get_new_game(game_id):
@@ -98,9 +110,8 @@ def get_new_game(game_id):
 
 
 
-
-
-
+def get_other_team(team):
+    return YELLOW_TEAM if team == RED_TEAM else RED_TEAM
 
 
 def generate_jwt(game_id, team):
