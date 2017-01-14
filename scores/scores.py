@@ -46,6 +46,9 @@ def calculate_scores(stones, base_radius, stone_radius):
             break
     return current
 
+@app.route('/')
+def hello():
+    return "Hello"
 
 @app.route('/results')
 def get_results():
@@ -53,9 +56,9 @@ def get_results():
     base_radius = request.args.get('base_radius')
     stone_radius = request.args.get('stone_radius')
 
-    calculate_scores(stones, base_radius, stone_radius)
+    score = calculate_scores(stones, base_radius, stone_radius)
 
-    json_data = json.dumps(data)
+    json_data = json.dumps(score)
 
     return Response(
         response=json_data,
@@ -64,3 +67,4 @@ def get_results():
 
 if __name__ == '__main__':
     print('Start')
+    app.run(debug=True, host='localhost', port=8127)

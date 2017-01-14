@@ -4,7 +4,7 @@ services:
   server:
     build: './'
     ports:
-     - '4567:5000'
+     - '8127:8127'
     volumes:
      - '.:/code'
     environment:
