@@ -7,15 +7,15 @@ app = Flask(__name__)
 app.debug = True
 socketio = SocketIO(app)
 
-@app.route('/<channel_id>')
-def publish(channel_id):
+@app.route('/<game_id>')
+def publish(game_id):
     data = {}
-    data['channel_id'] = channel_id
+    data['game_id'] = game_id
     data['msg'] = request.args.get('msg')
     json_data = json.dumps(data)
 
-    print(f'Publishing: {json_data} to {channel_id}')
-    socketio.emit('message', json_data, room=channel_id)
+    print(f'Publishing: {json_data} to {game_id}')
+    socketio.emit('message', json_data, room=game_id)
     
     return Response(
         response=json_data,
@@ -25,9 +25,9 @@ def publish(channel_id):
 
 @socketio.on('joined')
 def on_join(message):
-    channel_id = message['channel_id']
-    print(f'Joining: {channel_id}')
-    join_room(channel_id)
+    game_id = message['game_id']
+    print(f'Joining: {game_id}')
+    join_room(game_id)
 
 
 if __name__ == '__main__':
