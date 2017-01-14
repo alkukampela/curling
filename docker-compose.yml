@@ -43,6 +43,8 @@ services:
       dockerfile: Dockerfile-dev
     volumes:
       - "./gamemanager:/code"
+    environment:
+     - PYTHONUNBUFFERED=0
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
       - "traefik.port=5000"

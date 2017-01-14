@@ -32,8 +32,8 @@ PROP_LAST_STONE = 'last_stone'
 @app.route('/dev/create')
 def create_game():
     game_id = generate_new_id()
-    game = get_new_game(game_id)
-    create_game(game_id, game)
+    game = init_new_game(game_id)
+    create_game_in_dataservice(game_id, game)
 
     team_red_jwt = generate_jwt(game[PROP_GAME_ID], RED_TEAM)
     team_yellow_jwt = generate_jwt(game[PROP_GAME_ID], YELLOW_TEAM)
@@ -115,7 +115,7 @@ def save_end_score(game_id):
 
 
 
-def get_new_game(game_id):
+def init_new_game(game_id):
     game = {}
     game[PROP_GAME_ID] = game_id
     
@@ -183,11 +183,12 @@ def generate_new_id():
 
 def get_game(game_id):
     response = requests.get(f'http://gateway/data-service/games/{game_id}')
+    print('Hoo: '+str(response.status_code))    
     return response.json()
 
-def create_game(game_id, game):
-    requests.post(f'http://gateway/data-service/games/{game_id}', data = game)
-
+def create_game_in_dataservice(game_id, game):
+    response = requests.put(f'http://gateway/data-service/games/{game_id}', data = game)
+    print('Hii: '+str(response.status_code))
 
 
 if __name__ == '__main__':
