@@ -1,6 +1,31 @@
 version: '2'
 
 services:
+  broadcaster:
+    build:
+      context: ./broadcaster
+    volumes:
+      - "./broadcaster:/code"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
+      - "traefik.port=9500"
+      - "traefik.backend=broadcaster"
+
+  data-service:
+    build:
+      dockerfile: Dockerfile-dev
+      context: ./data-service
+    volumes:
+      - "./data-service:/src/app"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/data-service"
+      - "traefik.port=5000"
+      - "traefik.backend=data-service"
+  redis:
+    image: redis:2.8.19
+    ports:
+      - 6379:6379
+
   delivery:
     build:
       context: ./delivery
@@ -10,6 +35,17 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/delivery"
       - "traefik.port=3000"
       - "traefik.backend=delivery"
+
+  gamemanager:
+    build:
+      context: ./gamemanager
+      dockerfile: Dockerfile-dev
+    volumes:
+      - "./gamemanager:/code"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
+      - "traefik.port=9600"
+      - "traefik.backend=gamemanager"
 
   gateway:
     image: traefik:v1.1.2
@@ -31,3 +67,14 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/simulate"
       - "traefik.port=3005"
       - "traefik.backend=physics"
+
+  results:
+    build:
+      dockerfile: Dockerfile-dev
+      context: ./results
+    volumes:
+      - "./results:/app"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/results"
+      - "traefik.port=5000"
+      - "traefik.backend=results"
