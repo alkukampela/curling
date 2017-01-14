@@ -19,8 +19,9 @@ services:
       - "./data-service:/src/app"
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/data-service"
-      - "traefik.port=5000"
+      - "traefik.port=3721"
       - "traefik.backend=data-service"
+
   redis:
     image: redis:2.8.19
     ports:
@@ -74,6 +75,7 @@ services:
       context: ./results
     volumes:
       - "./results:/app"
+    command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/results"
       - "traefik.port=5000"
