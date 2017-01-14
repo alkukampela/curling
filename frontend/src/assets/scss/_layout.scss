@@ -1,0 +1,72 @@
+body {
+  background: $towerGray;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+heading {
+  background: $shakespeare;
+  display: block;
+  width: 100;
+  padding: 1em;
+  @include shadow();
+}
+
+content {
+
+}
+
+.clear {
+  clear: both;
+}
+
+.scores,
+.team  {
+  width: 32.5%;
+  margin-left: 1.25%;
+  float: left;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.team {
+  h2,
+  h3 {
+    background: $kournikova;
+    color: $jellyBean;
+    font-family: 'Bungee', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    @include text-shadow();
+
+    margin: 0 0 0 0;
+    padding: 0.5em;
+  }
+
+  h2 {
+    margin-bottom: 0.3em;
+    font-size: 3em;
+  }
+
+  h3 {
+    font-size: 2em;
+  }
+
+  .deliveries{
+    background: $bostonBlue;
+    padding: 1em;
+  }
+
+  &.team2 {
+    h2 {
+      background: $bittersweet;
+      color: $white;
+    }
+
+    h3 {
+      background: $cornflowerBlue;
+      color: $white;
+    }
+  }
+}
