@@ -42,7 +42,6 @@ def create_game():
     resp += str(team_red_jwt) + '\n'
     resp += str(team_yellow_jwt) + '\n'
 
-
     return Response(
         response=resp,
         status=200,
@@ -87,7 +86,6 @@ def check_in_delivery(game_id):
 @app.route('/save_end_score/<game_id>', methods=['POST'])
 def save_end_score(game_id):
     end_score = request.get_json()
-    print(end_score)
 
     game = get_game_from_dataservice(game_id)
 
@@ -194,5 +192,4 @@ def update_game_in_dataservice(game_id, game):
 
 
 if __name__ == '__main__':
-    print('Start')
     app.run(host="0.0.0.0", debug=True)
