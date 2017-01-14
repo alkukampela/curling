@@ -39,6 +39,7 @@ services:
 
   frontend:
     build:
+      dockerfile: Dockerfile-dev
       context: ./frontend
     ports:
       - "80:80"
