@@ -4,7 +4,7 @@ module.exports = function(app){
 
   app.get('/games', function (req, res) {
     redis.get('games', function(err, result){
-      res.status(200).json(result);
+      res.status(200).json(result || []);
     })
   })
 
