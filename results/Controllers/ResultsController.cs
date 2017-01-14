@@ -59,7 +59,7 @@ namespace results.Controllers
         public string Team_2 { get; set; }
     }
 
-    [Route("api/[controller]")]
+    [Route("")]
     public class ResultsController : Controller
     {
         const string API_ENDPOINT = "https://jsonplaceholder.typicode.com";
