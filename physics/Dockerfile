@@ -10,8 +10,6 @@ ADD . /src/app
 WORKDIR /src/app
 RUN npm install
 
-RUN ls -la
-
 ENV NODE_ENV development
 
 EXPOSE 3005
