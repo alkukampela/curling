@@ -14,5 +14,11 @@ namespace results.Controllers
         {
             return "Sorry, no results";
         }
+
+        [HttpGet("{gameId}")]
+        public string Get(string gameId)
+        {
+            return String.Format("Got, {0}", gameId);
+        }
     }
 }
