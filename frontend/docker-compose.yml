@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ".:/usr/share/nginx/html"
