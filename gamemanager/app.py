@@ -56,7 +56,7 @@ def get_game_status(jwt_token):
     except:
         return Response(status=400)
 
-    game = get_game(response_data[PROP_GAME_ID])
+    game = get_game_from_dataservice(response_data[PROP_GAME_ID])
 
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
@@ -72,14 +72,14 @@ def get_game_status(jwt_token):
 
 @app.route('/check_in_delivery/<game_id>', methods=['POST'])
 def check_in_delivery(game_id):
-    game = get_game(game_id)
+    game = get_game_from_dataservice(game_id)
 
     team_that_delivered = game[PROP_DELIVERY_TURN]
 
     game[PROP_STONES_DELIVERED][team_that_delivered] += 1
     game[PROP_DELIVERY_TURN] = get_other_team(team_that_delivered)
 
-    # TODO call data service
+    update_game_in_dataservice(game_id, game)
 
     return Response(status=200, response=json.dumps(game))
 
@@ -89,8 +89,7 @@ def save_end_score(game_id):
     end_score = request.get_json()
     print(end_score)
 
-    # TODO: call data service
-    game = get_game(game_id)
+    game = get_game_from_dataservice(game_id)
 
     game[PROP_END_SCORES].append(end_score)
     game[PROP_TOTAL_SCORE][RED_TEAM] += end_score[RED_TEAM]
@@ -109,7 +108,7 @@ def save_end_score(game_id):
     # Note: this will be no-one when game is ended
     game[PROP_DELIVERY_TURN] = get_team_with_first_delivery_turn(game)
 
-    # TODO call data service
+    update_game_in_dataservice(game_id, game)
 
     return Response(status=200)
 
@@ -181,14 +180,20 @@ def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
 
 
-def get_game(game_id):
+def get_game_from_dataservice(game_id):
     response = requests.get(f'http://gateway/data-service/games/{game_id}')
-    print('Hoo: '+str(response.status_code))    
-    return response.json()
+    print('Hoo: '+str(response.status_code))
+    return json.loads(response.json())
 
 def create_game_in_dataservice(game_id, game):
-    response = requests.put(f'http://gateway/data-service/games/{game_id}', data = game)
+    response = requests.post(f'http://gateway/data-service/games/{game_id}', data = game)
     print('Hii: '+str(response.status_code))
+
+
+def update_game_in_dataservice(game_id, game):
+    response = requests.put(f'http://gateway/data-service/games/{game_id}', data = game)
+    print('Huu: '+str(response.status_code))
+
 
 
 if __name__ == '__main__':
