@@ -183,3 +183,5 @@ _testmain.go
 vendor/
 
 # End of https://www.gitignore.io/api/node,python,redis,go
+
+.vscode
