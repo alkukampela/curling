@@ -37,6 +37,14 @@ services:
       - "traefik.port=3000"
       - "traefik.backend=delivery"
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    volumes:
+      - "./frontend:/usr/share/nginx/html"
+
   gamemanager:
     build:
       context: ./gamemanager
@@ -53,7 +61,6 @@ services:
   gateway:
     image: traefik:v1.1.2
     ports:
-      - "80:80"
       - "8080:8080"
     volumes:
       - "./gateway/dev.toml:/etc/traefik/traefik.toml"
