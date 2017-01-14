@@ -61,11 +61,8 @@ def get_game_status(jwt_token):
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
     
-    response_data[PROP_LAST_STONE] = False
-    
-    
-    #check_for_last_stone(
-    #    game[PROP_STONES_DELIVERED], game[PROP_STONES_IN_END])
+    response_data[PROP_LAST_STONE] = check_for_last_stone(
+        game[PROP_STONES_DELIVERED], game[PROP_STONES_IN_END])
 
     return Response(
         response=json.dumps(response_data),
@@ -185,17 +182,14 @@ def generate_new_id():
 
 def get_game_from_dataservice(game_id):
     response = requests.get(f'http://gateway/data-service/games/{game_id}')
-    print('Hoo: '+str(response.status_code))
     return response.json()
 
 def create_game_in_dataservice(game_id, game):
-    response = requests.post(f'http://gateway/data-service/games/{game_id}', data = game)
-    print('Hii: '+str(response.status_code))
+    response = requests.post(f'http://gateway/data-service/games/{game_id}', json = game)
 
 
 def update_game_in_dataservice(game_id, game):
-    response = requests.put(f'http://gateway/data-service/games/{game_id}', data = game)
-    print('Huu: '+str(response.status_code))
+    response = requests.put(f'http://gateway/data-service/games/{game_id}', json = game)
 
 
 
