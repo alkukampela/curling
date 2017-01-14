@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.debug = True
 socketio = SocketIO(app)
 
-@app.route('/<game_id>')
+@app.route('/<game_id>', methods=['POST'])
 def publish(game_id):
     data = {}
     data['game_id'] = game_id
