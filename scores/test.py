@@ -14,9 +14,9 @@ class TestScores(unittest.TestCase):
         stones = [{'team': 1, 'x': 201, 'y': 799},
                   {'team': 2, 'x': 45, 'y': 409},
                   {'team': 2, 'x': 78, 'y': 99}]
-        base_diameter = 100
+        house_diameter = 100
         stone_diameter = 30
-        team, score = scores.calculate_scores(stones, base_diameter, stone_diameter)
+        team, score = scores.calculate_scores(stones, house_diameter, stone_diameter)
 
         assertEqual(team, 2)
         assertEqual(score, 2)

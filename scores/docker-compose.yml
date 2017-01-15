@@ -1,10 +1,12 @@
 version: '2'
 
 services:
-  server:
-    build: './'
+  score-counter:
+    build: 
+      context: '.'
+      dockerfile: Dockerfile-dev
     ports:
-     - '8127:8127'
+     - '8127:5000'
     volumes:
      - '.:/code'
     environment:

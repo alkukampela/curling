@@ -6,9 +6,9 @@ ADD . /code
 
 WORKDIR /code
 
-RUN apk add --no-cache --virtual .build-dependencies \
+RUN apk add --no-cache --virtual .build-deps \
     g++ \
     && pip3 install -r requirements.txt \
-    && apk del .build-dependencies
-EXPOSE 8127
+    && apk del .build-deps
+
 CMD ["python", "scores.py"]

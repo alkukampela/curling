@@ -59,6 +59,20 @@ services:
       - "traefik.port=5000"
       - "traefik.backend=gamemanager"
 
+  scores:
+    build:
+      context: ./scores
+      dockerfile: Dockerfile-dev
+    volumes:
+      - "./scores:/code"
+    environment:
+     - PYTHONUNBUFFERED=0
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/scores"
+      - "traefik.port=5000"
+      - "traefik.backend=scores"
+
+
   gateway:
     image: traefik:v1.1.2
     ports:

@@ -2,7 +2,7 @@ import json
 import uuid
 
 import requests
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response
 import jwt
 
 
@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 SECRET = 'L1hamugi'
 ID_LENGTH = 7
+DATASERVICE_URL = 'http://gateway/data-service/games/'
 
 RED_TEAM = 'team_1'
 YELLOW_TEAM = 'team_2'
@@ -28,6 +29,15 @@ PROP_TOTAL_SCORE = 'total_score'
 PROP_TEAM_WITH_HAMMER = 'team_with_hammer'
 PROP_TEAM = 'team'
 PROP_LAST_STONE = 'last_stone'
+
+
+@app.route('/')
+def hello():
+    print('Hello')
+    return Response(
+        response='test',
+        status=200,
+        mimetype='text/plain')
 
 @app.route('/dev/create')
 def create_game():
@@ -179,15 +189,15 @@ def generate_new_id():
 
 
 def get_game_from_dataservice(game_id):
-    response = requests.get(f'http://gateway/data-service/games/{game_id}')
+    response = requests.get(f'{DATASERVICE_URL}{game_id}')
     return response.json()
 
 def create_game_in_dataservice(game_id, game):
-    response = requests.post(f'http://gateway/data-service/games/{game_id}', json = game)
+    response = requests.post(f'{DATASERVICE_URL}{game_id}', json = game)
 
 
 def update_game_in_dataservice(game_id, game):
-    response = requests.put(f'http://gateway/data-service/games/{game_id}', json = game)
+    response = requests.put(f'{DATASERVICE_URL}{game_id}', json = game)
 
 
 
