@@ -4,11 +4,12 @@ services:
   broadcaster:
     build:
       context: ./broadcaster
+      dockerfile: Dockerfile-dev
     volumes:
       - "./broadcaster:/code"
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
-      - "traefik.port=9500"
+      - "traefik.port=5000"
       - "traefik.backend=broadcaster"
 
   data-service:

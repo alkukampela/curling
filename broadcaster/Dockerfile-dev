@@ -6,9 +6,9 @@ ADD . /code
 
 WORKDIR /code
 
-RUN apk add --no-cache --virtual .bulb-deps \
+RUN apk add --no-cache --virtual .build-deps \
     g++ \
     && pip3 install -r requirements.txt \
-    && apk del .bulb-deps
+    && apk del .build-deps
 
-CMD ["python", "bulbserver.py"]
+CMD ["python", "app.py"]
