@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using Newtonsoft.Json;
@@ -42,18 +43,39 @@ using Newtonsoft.Json;
 
 namespace results.Controllers
 {
-    // Dummy class for random test api
-    class UserModel
+    class TeamModel
     {
-        public int id { get; set; }
-        public string name { get; set; }
+        public string Team_1 { get; set; }
 
-        public string username { get; set; }
+        public string Team_2 { get; set; }
+    }
+
+    class StonesThrownModel
+    {
+        public int Team_1 { get; set; }
+
+        public int Team_2 { get; set; }
     }
 
     class GameModel
     {
         public string Game_id { get; set; }
+
+        public TeamModel Teams { get; set; }
+
+        public int Stones_in_end { get; set; }
+
+        public int total_ends { get; set; }
+
+        public StonesThrownModel Stones_thrown { get; set; }
+
+        public IList<int> End_scores { get; set; }
+    }
+
+    class SimpleGameModel
+    {
+        public string Game_id { get; set; }
+
         public string Team_1 { get; set; }
 
         public string Team_2 { get; set; }
@@ -62,42 +84,38 @@ namespace results.Controllers
     [Route("")]
     public class ResultsController : Controller
     {
-        const string API_ENDPOINT = "https://jsonplaceholder.typicode.com";
+        const string API_ENDPOINT = "http://gateway";
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var games = new List<GameModel>();
-
-            foreach (UserModel user in await this.FetchGames())
-            {
-                var game = new GameModel()
-                {
-                    Game_id = user.id.ToString(),
-                    Team_1 = user.name,
-                    Team_2 = user.username
-                };
-                games.Add(game);
-            }
-
+            var games = await this.FetchGames();
             return Json(games);
         }
 
-        private async Task<IList<UserModel>> FetchGames()
+        private async Task<IList<SimpleGameModel>> FetchGames()
         {
             using (var client = new HttpClient())
             {
                 try
                 {
                     client.BaseAddress = new Uri(API_ENDPOINT);
-                    var response = await client.GetAsync("/users");
+                    var response = await client.GetAsync("/data-service/games");
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<UserModel>>(stringResponse);
+                    var games = JsonConvert.DeserializeObject<List<GameModel>>(stringResponse);
+                    return games
+                        .Select(game => new SimpleGameModel()
+                        {
+                            Game_id = game.Game_id,
+                            Team_1 = game.Teams.Team_1,
+                            Team_2 = game.Teams.Team_2
+                        })
+                        .ToList();
                 }
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine(e);
-                    return new List<UserModel>();
+                    return new List<SimpleGameModel>();
                 }
             }
         }
@@ -107,13 +125,7 @@ namespace results.Controllers
         {
             try
             {
-                var user = await this.FetchGame(gameId);
-                var game = new GameModel()
-                {
-                    Game_id = user.id.ToString(),
-                    Team_1 = user.name,
-                    Team_2 = user.username
-                };
+                var game = await this.FetchGame(gameId);
                 return Json(game);
             }
             catch (ArgumentException e)
@@ -122,18 +134,18 @@ namespace results.Controllers
             }
         }
 
-        private async Task<UserModel> FetchGame(string gameId)
+        private async Task<GameModel> FetchGame(string gameId)
         {
             using (var client = new HttpClient())
             {
                 try
                 {
                     client.BaseAddress = new Uri(API_ENDPOINT);
-                    var response = await client.GetAsync("/users/" + gameId);
+                    var response = await client.GetAsync("/data-service/games/" + gameId);
                     if (response.IsSuccessStatusCode)
                     {
                         var stringResponse = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<UserModel>(stringResponse);
+                        return JsonConvert.DeserializeObject<GameModel>(stringResponse);
                     }
                     else
                     {
@@ -143,7 +155,7 @@ namespace results.Controllers
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine(e);
-                    return new UserModel();
+                    return new GameModel();
                 }
             }
         }
