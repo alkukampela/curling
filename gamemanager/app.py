@@ -67,6 +67,10 @@ def get_game_status(jwt_token):
 
     game = get_game_from_dataservice(response_data[PROP_GAME_ID])
 
+    if not game:
+        return Response(status=404)
+
+
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420)
     
