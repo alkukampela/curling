@@ -2,7 +2,9 @@ version: '2'
 
 services:
   server:
-    build: './'
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
     ports:
      - '9500:5000'
     volumes:
