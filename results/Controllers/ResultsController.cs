@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
+using System.Net;
 using Newtonsoft.Json;
+using Results.Models;
 
 // api/results
 // [
@@ -41,7 +43,7 @@ using Newtonsoft.Json;
 //     "end_scores": []
 // }
 
-namespace results.Controllers
+namespace Results.Controllers
 {
     class TeamModel
     {
@@ -72,20 +74,13 @@ namespace results.Controllers
         public IList<int> End_scores { get; set; }
     }
 
-    class SimpleGameModel
-    {
-        public string Game_id { get; set; }
 
-        public string Team_1 { get; set; }
-
-        public string Team_2 { get; set; }
-    }
 
     [Route("")]
     public class ResultsController : Controller
     {
-        const string API_ENDPOINT = "http://gateway";
-
+        private const string BASE_URL = "http://gateway";
+        
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -93,29 +88,29 @@ namespace results.Controllers
             return Json(games);
         }
 
-        private async Task<IList<SimpleGameModel>> FetchGames()
+        private async Task<IList<GameListItem>> FetchGames()
         {
+            
             using (var client = new HttpClient())
             {
                 try
                 {
-                    client.BaseAddress = new Uri(API_ENDPOINT);
+                    client.BaseAddress = new Uri(BASE_URL);
                     var response = await client.GetAsync("/data-service/games");
                     var stringResponse = await response.Content.ReadAsStringAsync();
                     var games = JsonConvert.DeserializeObject<List<GameModel>>(stringResponse);
+
                     return games
-                        .Select(game => new SimpleGameModel()
-                        {
+                        .Select(game => new GameListItem{
                             Game_id = game.Game_id,
                             Team_1 = game.Teams.Team_1,
                             Team_2 = game.Teams.Team_2
-                        })
-                        .ToList();
+                        }).ToList();
                 }
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine(e);
-                    return new List<SimpleGameModel>();
+                    return new List<GameListItem>();
                 }
             }
         }
@@ -128,9 +123,9 @@ namespace results.Controllers
                 var game = await this.FetchGame(gameId);
                 return Json(game);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
-                return StatusCode(404);
+                return StatusCode((int)HttpStatusCode.NotFound);
             }
         }
 
@@ -140,7 +135,7 @@ namespace results.Controllers
             {
                 try
                 {
-                    client.BaseAddress = new Uri(API_ENDPOINT);
+                    client.BaseAddress = new Uri(BASE_URL);
                     var response = await client.GetAsync("/data-service/games/" + gameId);
                     if (response.IsSuccessStatusCode)
                     {
