@@ -52,7 +52,7 @@ namespace Results.Controllers
         public string Team_2 { get; set; }
     }
 
-    class StonesThrownModel
+    class StonesDelivered
     {
         public int Team_1 { get; set; }
 
@@ -69,7 +69,7 @@ namespace Results.Controllers
 
         public int total_ends { get; set; }
 
-        public StonesThrownModel Stones_thrown { get; set; }
+        public StonesDelivered Stones_delivered { get; set; }
 
         public IList<int> End_scores { get; set; }
     }
