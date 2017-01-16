@@ -22,10 +22,24 @@ virhetilanteessa palautetaan virhekoodi 400.
     * Kutsutaan POST gamemanager/check_in_delivery/{game_id}
        * Tässä ei tarvita mitään payloadia
 * Jos last_stone = true
-    * Kutsutaan GET scores/results
-       * stones = Payloadina fysiikkaengineltä tullut json
-       * house_radius = pesän säde, arvo pitää selvittää
-       * stone_radius = kiven säde, arvo pitää selvittää
+    * Kutsutaan GET physics/radii
+    * Kutsutaan POST scores/calculate_end_score (Payload dokumentin alaosassa)
     * Kutsutaan POST gamemanager/save_end_score/{game_id}
         * Payloadina scoresilta tullut json
     * Kutsutaan DELETE data-service/stones{game_id}
+
+
+## scores/calculate_end_score:n payload
+```
+{
+	"stones": [
+		{"team": "team_1", "x": 201, "y": 799},
+		{"team": "team_2", "x": 45, "y": 409},
+		{"team": "team_2", "x": 78, "y": 99}
+	],
+	"radii": {
+		"house": 120,
+		"stone": 2
+	}
+}
+```
