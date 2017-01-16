@@ -62,11 +62,13 @@ def hello():
         mimetype='text/plain')
 
 
-@app.route('/results')
-def get_results():
-    stones = json.loads(request.args.get('stones'))
-    house_radius = float(request.args.get('house_radius'))
-    stone_radius = float(request.args.get('stone_radius'))
+@app.route('/calculate_end_score', methods=['POST'])
+def calculate_end_score():
+    request_object = request.get_json()
+
+    stones = request_object['stones']
+    house_radius = request_object['radii']['house']
+    stone_radius = request_object['radii']['stone']
 
     teams = set([stone[PROP_TEAM] for stone in stones])
     results = dict.fromkeys(teams, 0)
