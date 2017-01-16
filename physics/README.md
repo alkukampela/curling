@@ -1,7 +1,11 @@
-```
-POST /simulate
+### POST /simulate
 
-request:
+Simulate a delivery of a stone towards an array of existing stones.
+Responds with an array of the stone locations after the delivery with out-of-bounds
+stones removed.
+
+Example request:
+```
 {
     "delivery": {
         "team": "1",
@@ -27,8 +31,9 @@ request:
         }
     ]
 }
-
+```
 response:
+```
 [
     {
         "team": "1",
@@ -41,10 +46,14 @@ response:
         "y": 9.7
     }
 ]
+```
+### GET /radii
 
+Get the radii of the stones and the house used by the simulator.
 
-GET /radii
-response:
+Example response:
+
+```
 {
     stone: 10,
     house: 100
