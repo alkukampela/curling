@@ -91,7 +91,7 @@ services:
     volumes:
       - "./physics:/app"
     labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/simulate"
+      - "traefik.frontend.rule=PathPrefixStrip:/physics"
       - "traefik.port=3005"
       - "traefik.backend=physics"
 

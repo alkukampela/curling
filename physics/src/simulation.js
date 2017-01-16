@@ -1,14 +1,16 @@
 import Matter from 'matter-js'
 const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 
+// TODO: adjust the values (radii, bounds) to match visualization
 const FRICTION = 0.02
-const RADIUS = 10
+const STONE_RADIUS = 10
+const HOUSE_RADIUS = 50
 
 // Stones out of bounds are removed from the sheet.
 // The simulation is stopped when there are either no stones
 // inside bounds or all the stones are slower than MIN_SPEED.
 const BOUNDS = {
-  min: { x: -100, y: 0 },
+  min: { x: -100, y: -100 },
   max: { x: 100, y: 500 },
 }
 const MIN_SPEED = 0.01
@@ -20,7 +22,7 @@ const getVelocity = (speed, angle) => {
 }
 
 const createStone = (x, y, team) => {
-  const stone = Bodies.circle(x, y, RADIUS, { frictionAir: FRICTION })
+  const stone = Bodies.circle(x, y, STONE_RADIUS, { frictionAir: FRICTION })
   stone.team = team
   return stone
 }
@@ -36,14 +38,12 @@ const createEngine = matterStones => {
   const engine = Engine.create()
   engine.world.gravity = Vector.create(0, 0)
   World.add(engine.world, matterStones)
-
-  // Remove items that are out of bounds
   Events.on(engine, 'afterUpdate', () => {
+    // Remove items that are out of bounds
     engine.world.bodies
       .filter(isOutOfBounds)
       .forEach(stone => World.remove(engine.world, stone))
   })
-
   return engine
 }
 
@@ -55,10 +55,7 @@ const stoneToJson = stone => {
 
 const isOutOfBounds = stone => !Bounds.overlaps(stone.bounds, BOUNDS)
 const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
-
-const simulationShouldStop = stones => (
-  stones.length === 0 || !stones.some(isMoving)
-);
+const shouldStop = stones => stones.length == 0 || !stones.some(isMoving)
 
 const render = (delivery, stones, element) => {
   const matterStones = createStones(delivery, stones)
@@ -70,17 +67,15 @@ const render = (delivery, stones, element) => {
     bounds: BOUNDS,
     options: {
       hasBounds: true,
-      height: 500,
-      width: 200,
-    }
+      height: BOUNDS.max.y - BOUNDS.min.y,
+      width: BOUNDS.max.x - BOUNDS.min.x,
+    },
   })
-
   Events.on(renderer, 'afterRender', () => {
-    if (simulationShouldStop(world.bodies)) {
+    if (shouldStop(world.bodies)) {
       Render.stop(renderer)
     }
   })
-
   Engine.run(engine)
   Render.run(renderer)
 }
@@ -89,14 +84,12 @@ const simulate = (delivery, stones) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
   const world = engine.world
-
-  while (!simulationShouldStop(world.bodies)) {
+  while (!shouldStop(world.bodies)) {
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
     Engine.update(engine, engine.timing.delta)
     Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp })
   }
-
   return world.bodies.map(stoneToJson)
 }
 
-export { simulate, render }
+export { simulate, render, STONE_RADIUS, HOUSE_RADIUS }

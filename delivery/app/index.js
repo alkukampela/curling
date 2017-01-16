@@ -18,7 +18,7 @@ function getStones (gameId) {
 
 function getSimulation (params) {
   console.log("getSimulation", params);
-  return axios.post('http://gateway/simulate/', params);
+  return axios.post('http://gateway/physics/simulate/', params);
 }
 
 app.put('/deliver_stone', function (req, res) {
