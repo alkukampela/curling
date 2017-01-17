@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-
 const ResultsApi = axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: 'http://localhost/results/',
 });
 
 const getActiveGames = () => {
   return ResultsApi
     .get('')
-    .then(response => response.data);
+    .then(response => response.data, []);
 };
 
 const getResults = (gameId) => {
