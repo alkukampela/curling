@@ -75,6 +75,7 @@ const simulationShouldStop = stones => (
 );
 
 const render = (delivery, stones, element) => {
+
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
   const world = engine.world

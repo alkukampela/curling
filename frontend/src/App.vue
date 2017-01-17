@@ -23,6 +23,8 @@ asfasf
     </header>
     <content>
       content
+    <div id="ice-surface">
+    </div>
     </content>
   </div>
 </template>
@@ -30,34 +32,21 @@ asfasf
 <script>
 import { render } from './simulation'
 
-// TODO receive this via websocket and render
-const { stones, delivery } = {
-  "delivery": {
-    "team": "1",
-    "speed": 10,
-    "angle": 90,
-    "start_x": 5
-  },
-  "stones": [
-    {
-      "team": "2",
-      "x": 0,
-      "y": 100
-    },
-    {
-      "team": "1",
-      "x": -30,
-      "y": 80
-    },
-    {
-      "team": "1",
-      "x": -30,
-      "y": 0
-    }
-  ]
-}
+const socket = io.connect('http://localhost:9999')
+const game_id = 'game_1'
 
-render(delivery, stones, document.body)
+socket.on('connect', function() {
+  socket.emit('subscribe', { game_id });
+});
+
+socket.on('new_delivery', function(data) {
+  const iceSurface = document.getElementById('ice-surface')
+  while (iceSurface.firstChild) {
+    iceSurface.removeChild(iceSurface.firstChild);
+  }
+  const { stones, delivery } = data;
+  render(delivery, stones, document.getElementById('ice-surface'))
+});
 
 export default {
   name: 'app',
