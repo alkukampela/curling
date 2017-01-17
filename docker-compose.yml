@@ -5,6 +5,8 @@ services:
     build:
       context: ./broadcaster
       dockerfile: Dockerfile-dev
+    ports:
+      - 9999:5000
     volumes:
       - "./broadcaster:/code"
     labels:

@@ -2,11 +2,9 @@ import json
 
 from flask import Flask, request, Response
 from flask_socketio import SocketIO, join_room, send
-from flask_cors import CORS
 
 app = Flask(__name__)
 app.debug = True
-cors = CORS(app,resources={r"/*":{"origins":"*"}})
 socketio = SocketIO(app)
 
 
