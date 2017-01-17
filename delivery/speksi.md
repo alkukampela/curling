@@ -1,18 +1,20 @@
 # Heittopalvelun toiminta
-* Haetaan gamemanagerilta pelin status (esimerkkivastaus alempana).
+* Haetaan gamemanagerilta pelin status: GET gamemanager/games_status/{jwt_token}
+ (esimerkkivastaus alempana).
     * Jos vastauksena tuli http-virhekoodi palautetaan se sellaisenaan
 ```
 {
    "game_id": "b3ad907",
    "team": "team_1",
    "last_stone": false
-}    
+}
 ```
 * Validoidaan syöteparametrit (kaikki pakollisia ja kokonaislukuja),
 virhetilanteessa palautetaan virhekoodi 400.
     * speed: 0 - 14
     * angle: 0 - 180
     * start_x: -100 - 100
+* Lisätään delivery-objektiin game_status-oliossa oleva team 
 * Kutsutaan GET data-service/stones/{game_id}
 * Kutsutaan fysiikkaengineä, tuloksena saadaan kivien sijainti heiton jälkeen
 * Kutsutaan POST broadcast/{game_id}
@@ -24,7 +26,7 @@ virhetilanteessa palautetaan virhekoodi 400.
 * Jos last_stone = true
     * Kutsutaan GET physics/radii
     * Kutsutaan POST scores/calculate_end_score (Payload dokumentin alaosassa)
-    * Kutsutaan POST gamemanager/save_end_score/{game_id}
+    * Kutsutaan POST gamemanager/end_score/{game_id}
         * Payloadina scoresilta tullut json
     * Kutsutaan DELETE data-service/stones{game_id}
 

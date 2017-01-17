@@ -58,7 +58,7 @@ def create_game():
         mimetype='text/plain')
 
 
-@app.route('/get_game_status/<jwt_token>')
+@app.route('/game_status/<jwt_token>')
 def get_game_status(jwt_token):
     try:
         response_data = jwt.decode(jwt_token, SECRET, algorithms=['HS256'])
@@ -97,7 +97,7 @@ def check_in_delivery(game_id):
     return Response(status=200, response=json.dumps(game))
 
 
-@app.route('/save_end_score/<game_id>', methods=['POST'])
+@app.route('/end_score/<game_id>', methods=['POST'])
 def save_end_score(game_id):
     end_score = request.get_json()
 

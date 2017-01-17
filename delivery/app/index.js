@@ -7,37 +7,41 @@ let app = express();
 
 app.use(morgan('combined'));
 
-let gateway = 'http://gateway';
+const broadcaster = 'http://gateway/broadcaster/' 
+const gameManager = 'http://gateway/gamemanager/';
+const stoneStore = 'http://gateway/data-service/stones/'
+const scoreCalculator = 'http://gateway/scores/'
+const simulator = 'http://gateway/physics/'
 
-function getGame (jwtToken) {
+function getGame(jwtToken) {
   console.log("getGame", jwtToken);
-  return axios.get(gateway + '/gamemanager/get_game_status/' + jwtToken);
+  return axios.get(gameManager + 'game_status/' + jwtToken);
 }
 
-function getStones (gameId) {
+function getStones(gameId) {
   console.log("getStones", gameId);
-  return axios.get(gateway + '/data-service/stones/' + gameId);
+  return axios.get(stoneStore + gameId);
 }
 
-function validateDeliveryParams (params) {
+function validateDeliveryParams(params) {
   return !R.any(R.isNil, R.props(['speed', 'angle', 'start_x'], params));
 }
 
-function getSimulation (params) {
+function performSimulation(params) {
   console.log("getSimulation", params);
-  return axios.post(gateway + 'physics/simulate/', params);
+  return axios.post(simulator + 'simulate/', params);
 }
 
-function notifyBroadcaster (params) {
+function notifyBroadcaster(gameId, params) {
   console.log("notifyBroadcaster", params);
-  return axios.post(gateway + '/simulate/', params);
+  return axios.post(broadcaster + gameId, params);
 }
 
-function makeDelivery(params) {
+function makeDelivery(gameId, params) {
   let requests = [];
 
-  requests.push(getSimulation(params));
-  requests.push(notifyBroadcaster(params));
+  requests.push(performSimulation(params));
+  requests.push(notifyBroadcaster(gameId, params));
 
   return Promise.all(requests);
 }
@@ -50,7 +54,6 @@ function validateRequest(req, res) {
   }
 
   if(!validateDeliveryParams(req.query)) {
-
     return res.status(400).json({});
   }
 
@@ -74,35 +77,41 @@ function getSimulationParams(game, deliveryParams) {
     });
 }
 
-function saveStone (gameId, stone) {
-  return axios.post(gateway + '/stones/' + gameId, stone);
+function saveStones(gameId, stones) {
+  return axios.post(stoneStore + gameId, stones);
 }
 
-function checkInDelivery (gameId, params) {
-  return axios.post(gateway + '/gamemanager/check_in_delivery/' + gameId, params);
+function checkInDelivery(gameId) {
+  return axios.post(gameManager + 'check_in_delivery/' + gameId);
 }
 
-function getScores (params) {
-
+function getScores(params) {
+  return axios.post(scoreCalculator + 'calculate_end_score', params);
 }
 
-function saveEndScore (gameId, params) {
-  return axios.post(gateway + '/gamemanager/save_end_score/' + gameId, params);
+// TODO: this should be called before counting end score
+function getRadii()
+{
+  return axios.Get(simulator + 'radii');
 }
 
-function deleteFoobar (gameId, params) {
-  return axios.delete(gateway + '/data-service/stones/' + gameId);
+function saveEndScore(gameId, endScore) {
+  return axios.post(gameManager + 'end_score/' + gameId, endScore);
 }
 
-function handleDelivery (game) {
-  return saveStone(game.game_id)
+function emptyStones(gameId) {
+  return axios.delete(stoneStore + gameId);
+}
+
+function handleDelivery(game) {
+  return saveStones(game.game_id)
     .then(result => checkInDelivery(game.game_id));
 }
 
-function handleLastDelivery (game) {
+function handleLastDelivery(game) {
   return getScores(game.game_id)
-    .then(result => saveEndScore(game.game_id))
-    .then(result => deleteFoobar(game.game_id));
+    .then(result => saveEndScore(game.game_id, result))
+    .then(result => emptyStones(game.game_id));
 }
 
 function saveDeliveryState(game) {
@@ -114,17 +123,17 @@ function saveDeliveryState(game) {
   }
 }
 
-app.put('/deliver_stone', function (req, res) {
+app.put('/deliver_stone', function(req, res) {
   let jwt = validateRequest(req, res);
 
   getGame(jwt)
-    .then(gameResponse=> {
+    .then(gameResponse => {
       if(gameResponse.status !== 200) {
         return res.status(gameResponse.status).json(gameResponse.data);
       }
 
       return getSimulationParams(gameResponse.data, req.query)
-        .then(simulationParams => makeDelivery(gameResponse.data, simulationParams))
+        .then(simulationParams => makeDelivery(gameResponse.data.game_id, simulationParams))
         .then(lorem => saveDeliveryState(gameResponse.data))
         .then(foobar => res.status(200).json({}));
     })
