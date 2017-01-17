@@ -49,7 +49,7 @@ function makeDelivery(gameId, params) {
 function validateRequest(req, res) {
   let authorization = req.headers.authorization;
 
-  if(!authorization){
+  if(!authorization) {
     return res.status(401).json({});
   }
 
@@ -57,6 +57,7 @@ function validateRequest(req, res) {
     return res.status(400).json({});
   }
 
+  // Authorization header format is: 'Bearer <token>' 
   return authorization.split(' ')[1];
 }
 
@@ -89,7 +90,7 @@ function getScores(params) {
   return axios.post(scoreCalculator + 'calculate_end_score', params);
 }
 
-// TODO: this should be called before counting end score
+// TODO: this should be called before calculating end score
 function getRadii()
 {
   return axios.Get(simulator + 'radii');
@@ -115,7 +116,7 @@ function handleLastDelivery(game) {
 }
 
 function saveDeliveryState(game) {
-  if(game.last_stone){
+  if(game.last_stone) {
     return handleLastDelivery();
   }
   else {
@@ -138,7 +139,6 @@ app.put('/deliver_stone', function(req, res) {
         .then(foobar => res.status(200).json({}));
     })
     .catch(err => res.status(500).json({}) );
-
 })
 
 
