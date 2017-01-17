@@ -1,5 +1,5 @@
 import unittest
-import scores
+import app
 
 
 class TestScores(unittest.TestCase):
@@ -7,7 +7,7 @@ class TestScores(unittest.TestCase):
         point1 = [-3, 15]
         point2 = [3, 10]
         expected_distance = 7.81025
-        distance = scores.euclidean_distance(point1, point2)
+        distance = app.euclidean_distance(point1, point2)
         self.assertEqual(expected_distance, distance)
 
     def calculate_score_simple(self):
@@ -16,7 +16,7 @@ class TestScores(unittest.TestCase):
                   {'team': 2, 'x': 78, 'y': 99}]
         house_diameter = 100
         stone_diameter = 30
-        team, score = scores.calculate_scores(stones, house_diameter, stone_diameter)
+        team, score = app.calculate_scores(stones, house_diameter, stone_diameter)
 
         assertEqual(team, 2)
         assertEqual(score, 2)
