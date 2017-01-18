@@ -16,7 +16,7 @@ const simulator = 'http://gateway/physics/'
 function getGame(jwtToken) {
   console.log("getGame", jwtToken);
 
-  // TODO: check if response is not 200 and then return it
+  // TODO: check if response.status is not 200 and then return it
   // i.e game not found or other player's turn
   return axios.get(gameManager + 'game_status/' + jwtToken);
 }
@@ -52,11 +52,11 @@ function makeDelivery(gameId, params) {
 function validateRequest(req, res) {
   let authorization = req.headers.authorization;
 
-  if(!authorization) {
-    return res.status(401).json({});
+  if (!authorization) {
+    return res.status(401).json({"error": "Jwt token is required"});
   }
 
-  if(!validateDeliveryParams(req.query)) {
+  if (!validateDeliveryParams(req.query)) {
     return res.status(400).json({"error": "Wrong params"});
   }
 
@@ -90,41 +90,40 @@ function checkInDelivery(gameId) {
   return axios.post(gameManager + 'check_in_delivery/' + gameId);
 }
 
-function getScores(params) {
-  return axios.post(scoreCalculator + 'calculate_end_score', params);
-}
 
-// TODO: this should be called before calculating end score
 function getRadii() {
   return axios.get(simulator + 'radii');
+}
+
+function calculateEndScore(radii, stone_locations) {
+  // TODO combine stone locations and radii to single payload
+  return axios.post(scoreCalculator + 'calculate_end_score', params);
 }
 
 function saveEndScore(gameId, endScore) {
   return axios.post(gameManager + 'end_score/' + gameId, endScore);
 }
 
-function emptyStones(gameId) {
+function resetStoneLocations(gameId) {
   return axios.delete(stoneStore + gameId);
 }
 
-function handleDelivery(game) {
+function processEndsLastStone(game, stone_locations) {
+  return getRadii().then(radii => calculateEndScore(radii, stone_locations)
+    .then(scores => saveEndScore(game.game_id, scores))
+    .then(resetStoneLocations(game.game_id)));
+}
+
+function storeState(game) {
   return saveStones(game.game_id)
     .then(result => checkInDelivery(game.game_id));
 }
 
-function handleLastDelivery(game) {
-  return getScores(game.game_id)
-    .then(result => saveEndScore(game.game_id, result))
-    .then(result => emptyStones(game.game_id));
-}
-
-function saveDeliveryState(game) {
-  if(game.last_stone) {
-    return handleLastDelivery();
+function saveDeliveryState(game, stone_locations) {
+  if (game.last_stone) {
+    return processEndsLastStone(game.game_id, stone_locations);
   }
-  else {
-    return handleDelivery(game);
-  }
+  return storeState(game.game_id, stone_locations);
 }
 
 app.put('/deliver_stone', function(req, res) {
@@ -134,14 +133,14 @@ app.put('/deliver_stone', function(req, res) {
     .then(gameResponse => {
       console.log('GAME_RESPONSE: ' + gameResponse.data);
 
-      if(gameResponse.status !== 200) {
+      if (gameResponse.status !== 200) {
         return res.status(gameResponse.status).json(gameResponse.data);
       }
 
 
       return getSimulationParams(gameResponse.data, req.query)
         .then(simulationParams => makeDelivery(gameResponse.data.game_id, simulationParams))
-        .then(lorem => saveDeliveryState(gameResponse.data))
+        .then(stone_locations => saveDeliveryState(gameResponse.data, stone_locations))
         .then(foobar => res.status(200).json({}));
     })
     .catch(err => res.status(500).json({}) );
