@@ -7,7 +7,7 @@ let app = express();
 
 app.use(morgan('combined'));
 
-const broadcaster = 'http://gateway/broadcaster/' 
+const broadcaster = 'http://gateway/broadcaster/'
 const gameManager = 'http://gateway/gamemanager/';
 const stoneStore = 'http://gateway/data-service/stones/'
 const scoreCalculator = 'http://gateway/scores/'
@@ -57,7 +57,7 @@ function validateRequest(req, res) {
     return res.status(400).json({});
   }
 
-  // Authorization header format is: 'Bearer <token>' 
+  // Authorization header format is: 'Bearer <token>'
   return authorization.split(' ')[1];
 }
 
@@ -91,9 +91,8 @@ function getScores(params) {
 }
 
 // TODO: this should be called before calculating end score
-function getRadii()
-{
-  return axios.Get(simulator + 'radii');
+function getRadii() {
+  return axios.get(simulator + 'radii');
 }
 
 function saveEndScore(gameId, endScore) {
