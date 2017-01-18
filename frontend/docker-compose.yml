@@ -3,19 +3,11 @@ version: '2'
 services:
   frontend:
     build:
+      dockerfile: Dockerfile-dev
       context: .
-      dockerfile: Dockerfile-dev
     ports:
-      - "80:80"
+      - "8080:8080"
+    # volumes:
+    #   - "./frontend:/usr/share/nginx/html"
     volumes:
-      - ".:/usr/share/nginx/html"
-
-  results:
-    build:
-      context: '../results'
-      dockerfile: Dockerfile-dev
-    command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
-    ports:
-      - '5000:5000'
-    volumes:
-      - '../results:/app'
+      - ".:/src/app"

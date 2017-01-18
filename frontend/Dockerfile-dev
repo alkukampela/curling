@@ -1,1 +1,21 @@
-FROM nginx:1.11.8-alpine
+FROM mhart/alpine-node:7.3.0
+
+# WORKDIR /src
+
+RUN npm install webpack-dev-server -g
+RUN npm install cross-env -g
+RUN npm install webpack -g
+
+ADD package.json /src/package.json
+
+WORKDIR /src
+
+RUN npm install
+
+ADD . /src/app
+
+WORKDIR /src/app
+
+EXPOSE 8080
+
+CMD ["npm", "run", "dev"]

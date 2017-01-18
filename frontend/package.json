@@ -2,12 +2,13 @@
   "name": "curling-frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot  --host 0.0.0.0 --port 8080",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "axios": "^0.15.3",
     "bourbon": "^4.2.7",
+    "cross-env": "^3.1.4",
     "matter-js": "^0.11.1",
     "node-sass": "^4.2.0",
     "sass-loader": "^4.1.1",

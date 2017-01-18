@@ -45,9 +45,12 @@ services:
       dockerfile: Dockerfile-dev
       context: ./frontend
     ports:
-      - "12004:80"
+      - "8080:8080"
+    # volumes:
+    #   - "./frontend:/usr/share/nginx/html"
     volumes:
-      - "./frontend:/usr/share/nginx/html"
+      - "./frontend:/src/app"
+
 
   gamemanager:
     build:
@@ -80,7 +83,7 @@ services:
     image: traefik:v1.1.2
     ports:
       - "80:80"
-      - "8080:8080"
+      - "8088:8088"
     volumes:
       - "./gateway/dev.toml:/etc/traefik/traefik.toml"
       - "/var/run/docker.sock:/var/run/docker.sock"
