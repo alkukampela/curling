@@ -70,9 +70,9 @@ function getSimulationParams(game, deliveryParams) {
       let simulationParams = {
         delivery: {
           team: game.team,
-          speed: deliveryParams.speed,
-          angle: deliveryParams.angle,
-          start_x: deliveryParams.start_x
+          speed: Number(deliveryParams.speed),
+          angle: Number(deliveryParams.angle),
+          start_x: Number(deliveryParams.start_x)
         },
         // TODO: this should not be necessary, stone response should always be array
         stones: R.isEmpty(stoneResponse.data) ? [] : stoneResponse.data
