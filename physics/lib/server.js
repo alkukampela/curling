@@ -1,9 +1,13 @@
 import express from 'express'
 import bodyParser from 'body-parser'
+import morgan from 'morgan'
+
 import { simulate, HOUSE_RADIUS, STONE_RADIUS } from './simulation'
 
 const server = express();
 server.use(bodyParser.json());
+
+server.use(morgan('combined'));
 
 server.post('/simulate', (req, res) => {
   const { delivery, stones } = req.body
