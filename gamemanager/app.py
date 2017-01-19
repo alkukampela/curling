@@ -90,7 +90,7 @@ def check_in_delivery(game_id):
 
     return Response(status=200, 
                     response=json.dumps(game),
-                    mimtype='application/json')
+                    mimetype='application/json')
 
 
 @app.route('/end_score/<game_id>', methods=['POST'])

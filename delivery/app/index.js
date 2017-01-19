@@ -14,7 +14,7 @@ const scoreCalculator = 'http://gateway/scores/'
 const simulator = 'http://gateway/physics/'
 
 function getGame(jwtToken) {
-  console.log("getGame", jwtToken);
+  console.log('getGame', jwtToken);
 
   // TODO: check if response.status is not 200 and then return it
   // i.e game not found or other player's turn
@@ -22,7 +22,7 @@ function getGame(jwtToken) {
 }
 
 function getStones(gameId) {
-  console.log("getStones", gameId);
+  console.log('getStones', gameId);
   return axios.get(stoneStore + gameId);
 }
 
@@ -31,12 +31,12 @@ function validateDeliveryParams(params) {
 }
 
 function performSimulation(params) {
-  console.log("getSimulation", params);
+  console.log('getSimulation', params);
   return axios.post(simulator + 'simulate/', params);
 }
 
 function notifyBroadcaster(gameId, params) {
-  console.log("notifyBroadcaster", params);
+  console.log('notifyBroadcaster', params);
   return axios.post(broadcaster + gameId, params);
 }
 
@@ -53,11 +53,11 @@ function validateRequest(req, res) {
   let authorization = req.headers.authorization;
 
   if (!authorization) {
-    return res.status(401).json({"error": "Jwt token is required"});
+    return res.status(401).json({'error': 'Jwt token is required'});
   }
 
   if (!validateDeliveryParams(req.query)) {
-    return res.status(400).json({"error": "Wrong params"});
+    return res.status(400).json({'error': 'Wrong params'});
   }
 
   // Authorization header format is: 'Bearer <token>'
@@ -96,7 +96,7 @@ function getRadii() {
 }
 
 function calculateEndScore(radii, stone_locations) {
-  // TODO combine stone locations and radii to single payload
+  const params = {radii: radii, stones: stone_locations}
   return axios.post(scoreCalculator + 'calculate_end_score', params);
 }
 
@@ -108,15 +108,15 @@ function resetStoneLocations(gameId) {
   return axios.delete(stoneStore + gameId);
 }
 
-function processEndsLastStone(game, stone_locations) {
+function processEndsLastStone(gameId, stone_locations) {
   return getRadii().then(radii => calculateEndScore(radii, stone_locations)
-    .then(scores => saveEndScore(game.game_id, scores))
-    .then(resetStoneLocations(game.game_id)));
+    .then(scores => saveEndScore(gameId, scores))
+    .then(resetStoneLocations(gameId)));
 }
 
-function storeState(game) {
-  return saveStones(game.game_id)
-    .then(result => checkInDelivery(game.game_id));
+function storeState(gameId) {
+  return saveStones(gameId)
+    .then(result => checkInDelivery(gameId));
 }
 
 function saveDeliveryState(game, stone_locations) {
@@ -126,7 +126,8 @@ function saveDeliveryState(game, stone_locations) {
   return storeState(game.game_id, stone_locations);
 }
 
-app.put('/deliver_stone', function(req, res) {
+
+app.put('/*', function(req, res) {
   let jwt = validateRequest(req, res);
 
   getGame(jwt)
@@ -134,6 +135,7 @@ app.put('/deliver_stone', function(req, res) {
       console.log('GAME_RESPONSE: ' + gameResponse.data);
 
       if (gameResponse.status !== 200) {
+        console.log('failed getgame');
         return res.status(gameResponse.status).json(gameResponse.data);
       }
 
@@ -141,9 +143,9 @@ app.put('/deliver_stone', function(req, res) {
       return getSimulationParams(gameResponse.data, req.query)
         .then(simulationParams => makeDelivery(gameResponse.data.game_id, simulationParams))
         .then(stone_locations => saveDeliveryState(gameResponse.data, stone_locations))
-        .then(foobar => res.status(200).json({}));
+        .then(_ => res.status(200).json({}));
     })
-    .catch(err => res.status(500).json({}) );
+    .catch(err => res.status(err.response.status).json(err.response.data) );
 })
 
 
