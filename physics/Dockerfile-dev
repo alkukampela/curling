@@ -1,14 +1,16 @@
 FROM mhart/alpine-node:7.3.0
 
-RUN mkdir /app
+RUN mkdir /src
 
-WORKDIR /app
-ADD package.json /app/package.json
+RUN npm install nodemon -g
 
-ADD . /app
-
-WORKDIR /app
+WORKDIR /src
+ADD package.json /src/package.json
 RUN npm install
+
+ADD . /src/app
+
+WORKDIR /src/app
 
 ENV NODE_ENV development
 

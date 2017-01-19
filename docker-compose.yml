@@ -89,7 +89,7 @@ services:
       context: ./physics
       dockerfile: Dockerfile-dev
     volumes:
-      - "./physics:/app"
+      - "./physics:/src/app"
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/physics"
       - "traefik.port=3005"
