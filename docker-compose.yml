@@ -87,6 +87,7 @@ services:
   physics:
     build:
       context: ./physics
+      dockerfile: Dockerfile-dev
     volumes:
       - "./physics:/app"
     labels:
