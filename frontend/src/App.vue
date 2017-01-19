@@ -33,7 +33,9 @@ asfasf
 import { render } from './simulation'
 
 const socket = io.connect('http://localhost:9999')
-const game_id = 'game_1'
+
+const params = new URLSearchParams(window.location.search.slice(1))
+const game_id = params.get('game_id')
 
 socket.on('connect', function() {
   socket.emit('subscribe', { game_id });
