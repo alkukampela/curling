@@ -48,7 +48,7 @@ def calculate_scores(stones, house_radius, stone_radius):
     #Iterate through stones and count score
     points = 1 #1 point for the closest stone
     for stone in stones[1:]:
-        # Stone has to belong to the same team and it can't be outside the base
+        # Stone has to belong to the same team
         if stone[PROP_TEAM] == closest_team:
             points += 1
         else:
