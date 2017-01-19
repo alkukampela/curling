@@ -31,14 +31,6 @@ PROP_TEAM = 'team'
 PROP_LAST_STONE = 'last_stone'
 
 
-@app.route('/')
-def hello():
-    print('Hello')
-    return Response(
-        response='test',
-        status=200,
-        mimetype='text/plain')
-
 @app.route('/dev/create')
 def create_game():
     game_id = generate_new_id()
@@ -52,10 +44,9 @@ def create_game():
     resp += str(team_red_jwt) + '\n'
     resp += str(team_yellow_jwt) + '\n'
 
-    return Response(
-        response=resp,
-        status=200,
-        mimetype='text/plain')
+    return Response(status=200,
+                    response=resp,
+                    mimetype='text/plain')
 
 
 @app.route('/game_status/<jwt_token>')
@@ -77,10 +68,9 @@ def get_game_status(jwt_token):
     response_data[PROP_LAST_STONE] = check_for_last_stone(
         game[PROP_STONES_DELIVERED], game[PROP_STONES_IN_END])
 
-    return Response(
-        response=json.dumps(response_data),
-        status=200,
-        mimetype='text/plain')
+    return Response(status=200,
+                    response=json.dumps(response_data),
+                    mimetype='application/json')
 
 
 @app.route('/check_in_delivery/<game_id>', methods=['POST'])
@@ -94,7 +84,9 @@ def check_in_delivery(game_id):
 
     update_game_in_dataservice(game_id, game)
 
-    return Response(status=200, response=json.dumps(game))
+    return Response(status=200, 
+                    response=json.dumps(game),
+                    mimtype='application/json')
 
 
 @app.route('/end_score/<game_id>', methods=['POST'])
@@ -123,7 +115,6 @@ def save_end_score(game_id):
     update_game_in_dataservice(game_id, game)
 
     return Response(status=200)
-
 
 
 def init_new_game(game_id):
@@ -173,7 +164,7 @@ def get_team_with_hammer(current_holder, end_scores):
 def get_team_with_first_delivery_turn(game):
     if (game[PROP_TOTAL_ENDS] <= game[PROP_END_SCORES].count() and
         game[PROP_TOTAL_SCORE][RED_TEAM] != game[PROP_TOTAL_SCORE][YELLOW_TEAM]):
-        return "none"
+        return 'none'
     return get_other_team(game[PROP_TEAM_WITH_HAMMER])
 
 
@@ -204,6 +195,5 @@ def update_game_in_dataservice(game_id, game):
     response = requests.put(f'{DATASERVICE_URL}{game_id}', json = game)
 
 
-
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host='0.0.0.0', debug=True)

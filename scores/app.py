@@ -6,6 +6,8 @@ app = Flask(__name__)
 
 PROP_DISTANCE = 'distance'
 PROP_TEAM = 'team'
+PROP_RADII = 'radii'
+
 
 '''
 Calculates euclidean distance between two points
@@ -54,21 +56,13 @@ def calculate_scores(stones, house_radius, stone_radius):
     return closest_team, points
 
 
-@app.route('/')
-def hello():
-    return Response(
-        response='test',
-        status=200,
-        mimetype='text/plain')
-
-
 @app.route('/calculate_end_score', methods=['POST'])
 def calculate_end_score():
     request_object = request.get_json()
 
     stones = request_object['stones']
-    house_radius = request_object['radii']['house']
-    stone_radius = request_object['radii']['stone']
+    house_radius = request_object[PROP_RADII]['house']
+    stone_radius = request_object[PROP_RADII]['stone']
 
     teams = set([stone[PROP_TEAM] for stone in stones])
     results = dict.fromkeys(teams, 0)
@@ -78,10 +72,9 @@ def calculate_end_score():
     if score:
         results[score[0]] = score[1]
 
-    return Response(
-        response=json.dumps(results),
-        status=200,
-        mimetype='application/json')
+    return Response(status=200,
+                    response=json.dumps(results),
+                    mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host='0.0.0.0', debug=True)
