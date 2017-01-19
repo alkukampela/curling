@@ -37,6 +37,7 @@ const createStones = (delivery, stones) => {
 const createEngine = matterStones => {
   const engine = Engine.create()
   engine.world.gravity = Vector.create(0, 0)
+
   World.add(engine.world, matterStones)
   Events.on(engine, 'afterUpdate', () => {
     // Remove items that are out of bounds
@@ -44,6 +45,7 @@ const createEngine = matterStones => {
       .filter(isOutOfBounds)
       .forEach(stone => World.remove(engine.world, stone))
   })
+
   return engine
 }
 
@@ -61,6 +63,7 @@ const render = (delivery, stones, element) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
   const world = engine.world
+
   const renderer = Render.create({
     element,
     engine,
@@ -76,6 +79,7 @@ const render = (delivery, stones, element) => {
       Render.stop(renderer)
     }
   })
+
   Engine.run(engine)
   Render.run(renderer)
 }
@@ -84,11 +88,13 @@ const simulate = (delivery, stones) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
   const world = engine.world
+
   while (!shouldStop(world.bodies)) {
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
     Engine.update(engine, engine.timing.delta)
     Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp })
   }
+
   return world.bodies.map(stoneToJson)
 }
 
