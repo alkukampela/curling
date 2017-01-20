@@ -1,9 +1,9 @@
-let express = require('express');
-let morgan = require('morgan');
-let axios = require('axios');
-let R = require('ramda');
+const express = require('express');
+const morgan = require('morgan');
+const axios = require('axios');
+const R = require('ramda');
 
-let app = express();
+const app = express();
 
 app.use(morgan('combined'));
 
@@ -45,7 +45,7 @@ function makeDelivery(gameId, params) {
 
   requests.push(performSimulation(params));
   requests.push(notifyBroadcaster(gameId, params));
-
+  console.log('*****');
   return Promise.all(requests);
 }
 
@@ -90,7 +90,6 @@ function checkInDelivery(gameId) {
   return axios.post(gameManager + 'check_in_delivery/' + gameId);
 }
 
-
 function getRadii() {
   return axios.get(simulator + 'radii');
 }
@@ -109,13 +108,14 @@ function resetStoneLocations(gameId) {
 }
 
 function processEndsLastStone(gameId, stone_locations) {
-  return getRadii().then(radii => calculateEndScore(radii, stone_locations)
-    .then(scores => saveEndScore(gameId, scores))
+  return getRadii()
+    .then(radii => calculateEndScore(radii.data, stone_locations)
+    .then(scores => saveEndScore(gameId, scores.data))
     .then(resetStoneLocations(gameId)));
 }
 
-function storeState(gameId) {
-  return saveStones(gameId)
+function storeState(gameId, stone_locations) {
+  return saveStones(gameId, stone_locations)
     .then(result => checkInDelivery(gameId));
 }
 
@@ -132,21 +132,17 @@ app.put('/*', function(req, res) {
 
   getGame(jwt)
     .then(gameResponse => {
-      console.log('GAME_RESPONSE: ' + gameResponse.data);
 
       if (gameResponse.status !== 200) {
-        console.log('failed getgame');
         return res.status(gameResponse.status).json(gameResponse.data);
       }
 
-
       return getSimulationParams(gameResponse.data, req.query)
         .then(simulationParams => makeDelivery(gameResponse.data.game_id, simulationParams))
-        .then(stone_locations => saveDeliveryState(gameResponse.data, stone_locations))
+        .then(stone_locations => saveDeliveryState(gameResponse.data, stone_locations[0].data))
         .then(_ => res.status(200).json({}));
     })
     .catch(err => res.status(err.response.status).json(err.response.data) );
 })
-
 
 module.exports = app;

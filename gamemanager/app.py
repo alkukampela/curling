@@ -174,7 +174,7 @@ def get_team_with_first_delivery_turn(game):
 
 def check_for_last_stone(stones_delivered, stones_in_end):
     stones_thrown = stones_delivered[RED_TEAM] + stones_delivered[YELLOW_TEAM]
-    return stones_thrown + 1 >= stones_in_end
+    return stones_thrown + 1 >= stones_in_end * 2
 
 
 def generate_jwt(game_id, team):
@@ -183,6 +183,7 @@ def generate_jwt(game_id, team):
     jwt_content[PROP_TEAM] = team
     return jwt.encode(jwt_content, SECRET, algorithm='HS256')
 
+
 def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
 
@@ -190,6 +191,7 @@ def generate_new_id():
 def get_game_from_dataservice(game_id):
     response = requests.get(f'{DATASERVICE_URL}{game_id}')
     return response.json()
+
 
 def create_game_in_dataservice(game_id, game):
     response = requests.post(f'{DATASERVICE_URL}{game_id}', json = game)
