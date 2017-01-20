@@ -2,7 +2,7 @@
   "name": "curling-frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot  --host 0.0.0.0 --port 8080",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot  --host 0.0.0.0 --port 8081",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
@@ -12,7 +12,8 @@
     "matter-js": "^0.11.1",
     "node-sass": "^4.2.0",
     "sass-loader": "^4.1.1",
-    "vue": "^2.1.0"
+    "vue": "^2.1.0",
+    "curling-physics": "../physics"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

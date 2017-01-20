@@ -1,8 +1,10 @@
 import Matter from 'matter-js'
 const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 
-// TODO: adjust the values (radii, bounds) to match visualization
+// TODO: adjust the values (radii, bounds) to match visualization, sensible
+//       restitution
 const FRICTION = 0.02
+const RESTITUTION = 0.1
 const STONE_RADIUS = 10
 const HOUSE_RADIUS = 50
 
@@ -21,15 +23,31 @@ const getVelocity = (speed, angle) => {
   return Vector.create(vx, vy)
 }
 
-const createStone = (x, y, team) => {
-  const stone = Bodies.circle(x, y, STONE_RADIUS, { frictionAir: FRICTION })
+const createStone = (x, y, team, sprites) => {
+  const options = {
+    frictionAir: FRICTION,
+    restitution: RESTITUTION,
+  }
+  if (sprites !== undefined) {
+    options.render = {
+      sprite: {
+        texture: sprites[team],
+        xScale: 1/3,
+        yScale: 1/3
+      }
+    }
+  }
+  const stone = Bodies.circle(x, y, STONE_RADIUS, options)
   stone.team = team
   return stone
 }
 
-const createStones = (delivery, stones) => {
-  const stationary = stones.map(s => createStone(s.x, s.y, s.team))
-  const delivered = createStone(delivery.start_x, BOUNDS.max.y, delivery.team)
+const createStones = (delivery, stones, sprites) => {
+  const stationary = stones.map(s => createStone(s.x, s.y, s.team, sprites))
+  const delivered = createStone(delivery.start_x,
+                                BOUNDS.max.y,
+                                delivery.team,
+                                sprites)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
   return [delivered, ...stationary]
 }
@@ -59,31 +77,6 @@ const isOutOfBounds = stone => !Bounds.overlaps(stone.bounds, BOUNDS)
 const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
 const shouldStop = stones => stones.length == 0 || !stones.some(isMoving)
 
-const render = (delivery, stones, element) => {
-  const matterStones = createStones(delivery, stones)
-  const engine = createEngine(matterStones)
-  const world = engine.world
-
-  const renderer = Render.create({
-    element,
-    engine,
-    bounds: BOUNDS,
-    options: {
-      hasBounds: true,
-      height: BOUNDS.max.y - BOUNDS.min.y,
-      width: BOUNDS.max.x - BOUNDS.min.x,
-    },
-  })
-  Events.on(renderer, 'afterRender', () => {
-    if (shouldStop(world.bodies)) {
-      Render.stop(renderer)
-    }
-  })
-
-  Engine.run(engine)
-  Render.run(renderer)
-}
-
 const simulate = (delivery, stones) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
@@ -98,4 +91,37 @@ const simulate = (delivery, stones) => {
   return world.bodies.map(stoneToJson)
 }
 
-export { simulate, render, STONE_RADIUS, HOUSE_RADIUS }
+const renderSimulation = (delivery, stones, sprites, background, element) => {
+
+  // Clear the element of potential previous renders
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+
+  const matterStones = createStones(delivery, stones, sprites)
+  const engine = createEngine(matterStones)
+
+  const renderer = Render.create({
+    element,
+    engine,
+    bounds: BOUNDS,
+    options: {
+      hasBounds: true,
+      background: background,
+      height: 2 * (BOUNDS.max.y - BOUNDS.min.y),
+      width: 2 * (BOUNDS.max.x - BOUNDS.min.x),
+      wireframes: false,
+    },
+  })
+
+  Events.on(renderer, 'afterRender', () => {
+    if (shouldStop(engine.world.bodies)) {
+      Render.stop(renderer)
+    }
+  })
+
+  Engine.run(engine)
+  Render.run(renderer)
+}
+
+export { simulate, renderSimulation, STONE_RADIUS, HOUSE_RADIUS }

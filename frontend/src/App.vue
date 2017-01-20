@@ -30,12 +30,21 @@ asfasf
 </template>
 
 <script>
-import { render } from './simulation'
+import { render } from 'curling-physics/lib/simulation'
 
-const socket = io.connect('http://localhost:9999')
+// Sprites for the stones of the different teams
+// TODO support other teams than 1 & 2
+const sprites = {
+  '1': 'src/assets/stone_red_game.png',
+  '2': 'src/assets/stone_yellow_game.png',
+}
+const background = 'src/assets/track_cropped.png'
 
+// Parse game id from URL params
 const params = new URLSearchParams(window.location.search.slice(1))
 const game_id = params.get('game_id')
+
+const socket = io.connect('http://localhost:9999')
 
 socket.on('connect', function() {
   socket.emit('subscribe', { game_id });
@@ -43,11 +52,8 @@ socket.on('connect', function() {
 
 socket.on('new_delivery', function(data) {
   const iceSurface = document.getElementById('ice-surface')
-  while (iceSurface.firstChild) {
-    iceSurface.removeChild(iceSurface.firstChild);
-  }
-  const { stones, delivery } = data;
-  render(delivery, stones, document.getElementById('ice-surface'))
+  const { delivery, stones } = data;
+  render(delivery, stones, sprites, background, iceSurface)
 });
 
 export default {
