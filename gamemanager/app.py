@@ -15,7 +15,7 @@ DATASERVICE_URL = 'http://gateway/data-service/games/'
 RED_TEAM = 'team_1'
 YELLOW_TEAM = 'team_2'
 
-STONES_IN_END = 5
+STONES_IN_END = 5 # Per team
 TOTAL_ENDS = 4
 
 PROP_GAME_ID = 'game_id'
@@ -166,8 +166,9 @@ def get_team_with_hammer(current_holder, end_scores):
 
 
 def get_team_with_first_delivery_turn(game):
-    if (game[PROP_TOTAL_ENDS] <= game[PROP_END_SCORES].count() and
+    if (game[PROP_TOTAL_ENDS] <= len(game[PROP_END_SCORES]) and
         game[PROP_TOTAL_SCORE][RED_TEAM] != game[PROP_TOTAL_SCORE][YELLOW_TEAM]):
+        print('Game ended!')
         return 'none'
     return get_other_team(game[PROP_TEAM_WITH_HAMMER])
 

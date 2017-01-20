@@ -72,6 +72,7 @@ def calculate_end_score():
     if score:
         results[score[0]] = score[1]
 
+    print('End scores: '+ json.dumps(results))
     return Response(status=200,
                     response=json.dumps(results),
                     mimetype='application/json')
