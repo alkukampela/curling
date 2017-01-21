@@ -8,4 +8,4 @@ services:
     ports:
       - "3005:3005"
     volumes:
-      - ".:/app"
+      - ".:/src/app"
