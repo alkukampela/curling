@@ -45,7 +45,6 @@ function makeDelivery(gameId, params) {
 
   requests.push(performSimulation(params));
   requests.push(notifyBroadcaster(gameId, params));
-  console.log('*****');
   return Promise.all(requests);
 }
 

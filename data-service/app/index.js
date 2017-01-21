@@ -12,5 +12,6 @@ app.use(bodyParser.urlencoded({
 
 const game = require('./game')(app);
 const stone = require('./stone')(app);
+const newGame = require('./newgame')(app);
 
 module.exports = app;

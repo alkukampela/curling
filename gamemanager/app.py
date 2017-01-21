@@ -1,8 +1,10 @@
 import json
 import uuid
+import random
 
 import requests
 from flask import Flask, request, Response
+from flask_restful import reqparse
 import jwt
 
 
@@ -29,10 +31,65 @@ PROP_TOTAL_SCORE = 'total_score'
 PROP_TEAM_WITH_HAMMER = 'team_with_hammer'
 PROP_TEAM = 'team'
 PROP_LAST_STONE = 'last_stone'
+PROP_TEAM_NAME = 'team_name'
+PROP_DRAWN_TEAM = 'drawn_team'
+
+
+@app.route('/begin_game', methods=['POST'])
+def begin_game():
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('team', help='Name of your team')
+    parser.add_argument('ends', default=TOTAL_ENDS, required=False, 
+                        type=int, help='Number of ends in game')
+    parser.add_argument('stones', default=STONES_IN_END, required=False, 
+                        type=int, help='Number of stones in end (per team)')
+
+    args = parser.parse_args()    
+    team_name = args['team'].strip()
+    total_ends = args['ends']
+    stones_in_end = args['stones']
+    
+    if not team_name:
+        return Response(status=400,
+                        response='Error: Team name cannot be empty')
+
+    if total_ends < 1 or total_ends > 10:
+        return Response(status=400,
+                        response='Error: Ends to be played must be between 1 and 10')
+
+    if stones_in_end < 1 or stones_in_end > 8:
+        return Response(status=400,
+                        response='Error: There must be between 1 and 8 stones in each end')
+
+    new_game = {
+        PROP_GAME_ID: generate_new_id(),
+        PROP_TEAM_NAME: team_name,
+        PROP_DRAWN_TEAM: draw_a_team(),
+        PROP_TOTAL_ENDS: total_ends,
+        PROP_STONES_IN_END: stones_in_end
+    }
+
+    jwt_token = generate_jwt(new_game[PROP_GAME_ID], new_game[PROP_DRAWN_TEAM])
+
+    instructions = get_new_game_instructions(new_game[PROP_TOTAL_ENDS], 
+                                             new_game[PROP_STONES_IN_END], 
+                                             new_game[PROP_DRAWN_TEAM])
+
+    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'))
+
+    print(json.dumps(new_game))
+    return Response(status=200,
+                    response=instructions,
+                    mimetype='text/plain')
+
+@app.route('/begin_game', methods=['POST'])
+def join_game():
+    pass
 
 
 @app.route('/dev/create')
-def create_game():
+def dev_create_game():
     game_id = generate_new_id()
     game = init_new_game(game_id)
     create_game_in_dataservice(game_id, game)
@@ -60,13 +117,13 @@ def get_game_status(jwt_token):
 
     if not game:
         return Response(status=404,
-                        response = '{"error": "Invalid game"}',
+                        response='{"error": "Invalid game"}',
                         mimetype='application/json')
 
 
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420,
-                        response = '{"error": "Other team has the turn"}',
+                        response='{"error": "Other team has the turn"}',
                         mimetype='application/json')
     
     response_data[PROP_LAST_STONE] = check_for_last_stone(
@@ -201,6 +258,30 @@ def create_game_in_dataservice(game_id, game):
 def update_game_in_dataservice(game_id, game):
     response = requests.put(f'{DATASERVICE_URL}{game_id}', json = game)
 
+def draw_a_team():
+    return YELLOW_TEAM if random.randint(0, 1) else RED_TEAM
+
+
+def get_new_game_instructions(total_ends, stones_in_end, team):
+    if (team == RED_TEAM):
+        teamtext = 'You\'ll be playing with red stones and you have the first turn.'
+    else:
+        teamtext = 'You\'ll be playing with yellow stones and you have the second turn.'
+
+    return f'''
+Hello and welcome to the amazing world of Curling!
+
+A new game was initialized with {total_ends} ends having {stones_in_end} stones in each.
+{teamtext}
+The game can start when the other team joins in.
+'''
+
+def get_delivery_instructions(jwt_token):
+    return f'''    
+Usage (replace zeroes with suitable values):
+curl -X PUT "http://localhost/delivery?speed=0&angle=0&start_x=0" -H "Authorization: Bearer {jwt_token}"
+
+'''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
