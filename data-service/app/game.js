@@ -14,7 +14,9 @@ module.exports = function(app){
 
   app.get('/games/:id', function (req, res) {
     redis.get(KEY_PREFIX + req.params.id)
-      .then(result => R.isNil(result) ? res.status(404).json({}) : res.status(200).json(result))
+      .then(result => R.isNil(result) 
+                        ? res.status(404).json({}) 
+                        : res.status(200).json(result))
       .catch(err => res.status(500).json({}));
   })
 
