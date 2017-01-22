@@ -5,7 +5,6 @@ const client = redis.createClient({
 });
 
 function set(key, value) {
-  console.log(key + ' '+JSON.stringify(value))
   return new Promise(function(resolve, reject) {
     client.set(key, JSON.stringify(value), (err, result) => 
       R.isNil(err) ? resolve(result) : reject(err)
