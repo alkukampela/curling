@@ -1,11 +1,17 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 namespace Results.Models
 {
     public class GameListItem
     {
-        public string Game_id { get; set; }
+        [JsonProperty("game_id")]
+        public string GameId { get; set; }
 
-        public string Team_1 { get; set; }
+        [JsonProperty("team_1")]
+        public string Team1 { get; set; }
 
-        public string Team_2 { get; set; }
+        [JsonProperty("team_2")]
+        public string Team2 { get; set; }
     }
 }

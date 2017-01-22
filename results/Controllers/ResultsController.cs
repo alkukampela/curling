@@ -6,75 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Results.Models;
+using Jil;
+using Jil.DeserializeDynamic;
 
-// api/results
-// [
-//     {
-//         "game_id": "492dda052473",
-//         "team_1": "Sorsa-Sepot",
-//         "team_2": "Paha-Kalevit"
-//     },
-//     {
-//         "game_id": "a90ddba4b735",
-//         "team_1": "Hermorauniot",
-//         "team_2": "Luu-5"
-//     },
-//     {
-//         "game_id": "810c97fa295c",
-//         "team_1": "Jääkenttien Kuninkaat",
-//         "team_2": "Luudankylväjät"
-//     }
-// ]
-
-// api/results/{gameId}
-// {
-//     "game_id": "86b1474",
-//     "teams": {
-//         "team_1": "Sorsa-Sepot",
-//         "team_2": "Paha-Kalevit"
-//     },
-//     "stones_in_end": 5,
-//     "total_ends": 4,
-//     "stones_thrown": {
-//         "team_1": 0,
-//         "team_2": 0
-//     },
-//     "end_scores": []
-// }
 
 namespace Results.Controllers
 {
-    class TeamModel
-    {
-        public string Team_1 { get; set; }
-
-        public string Team_2 { get; set; }
-    }
-
-    class StonesDelivered
-    {
-        public int Team_1 { get; set; }
-
-        public int Team_2 { get; set; }
-    }
-
-    class GameModel
-    {
-        public string Game_id { get; set; }
-
-        public TeamModel Teams { get; set; }
-
-        public int Stones_in_end { get; set; }
-
-        public int total_ends { get; set; }
-
-        public StonesDelivered Stones_delivered { get; set; }
-
-        public IList<int> End_scores { get; set; }
-    }
-
-
 
     [Route("")]
     public class ResultsController : Controller
@@ -90,7 +29,7 @@ namespace Results.Controllers
 
         private async Task<IList<GameListItem>> FetchGames()
         {
-            
+            var games = new List<GameListItem>();
             using (var client = new HttpClient())
             {
                 try
@@ -98,19 +37,24 @@ namespace Results.Controllers
                     client.BaseAddress = new Uri(BASE_URL);
                     var response = await client.GetAsync("/data-service/games");
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    var games = JsonConvert.DeserializeObject<List<GameModel>>(stringResponse);
 
-                    return games
-                        .Select(game => new GameListItem{
-                            Game_id = game.Game_id,
-                            Team_1 = game.Teams.Team_1,
-                            Team_2 = game.Teams.Team_2
-                        }).ToList();
+                    var gamesJson = JSON.DeserializeDynamic(stringResponse);
+
+                    foreach (var item in gamesJson)
+                    {
+                        games.Add(new GameListItem{
+                            GameId = item["game_id"],
+                            Team1 = item["teams"]["team_1"],
+                            Team2 = item["teams"]["team_2"]
+                        });
+                    }
+
+                    return games;
                 }
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine(e);
-                    return new List<GameListItem>();
+                    return games;
                 }
             }
         }
@@ -129,7 +73,7 @@ namespace Results.Controllers
             }
         }
 
-        private async Task<GameModel> FetchGame(string gameId)
+        private async Task<Game> FetchGame(string gameId)
         {
             using (var client = new HttpClient())
             {
@@ -140,7 +84,7 @@ namespace Results.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var stringResponse = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<GameModel>(stringResponse);
+                        return JsonConvert.DeserializeObject<Game>(stringResponse);
                     }
                     else
                     {
@@ -150,7 +94,7 @@ namespace Results.Controllers
                 catch (HttpRequestException e)
                 {
                     Console.WriteLine(e);
-                    return new GameModel();
+                    return new Game();
                 }
             }
         }
