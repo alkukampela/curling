@@ -89,6 +89,7 @@ def begin_game():
                     response=instructions,
                     mimetype='text/plain')
 
+
 @app.route('/join_game', methods=['POST'])
 def join_game():
     parser = reqparse.RequestParser()
@@ -121,40 +122,15 @@ def join_game():
 
     create_game_in_dataservice(game_id, game)
 
-    
-    jwt_token = generate_jwt(game_id, joined_team)
-
     instructions = get_joined_game_instructions(new_game[PROP_TOTAL_ENDS], 
                                                 new_game[PROP_STONES_IN_END], 
                                                 joined_team)
+
+    jwt_token = generate_jwt(game_id, joined_team)
     instructions += get_delivery_instructions(jwt_token.decode('UTF-8'))
 
     return Response(status=200,
                     response=instructions,
-                    mimetype='text/plain')
-
-
-@app.route('/dev/create')
-def dev_create_game():
-    game_id = generate_new_id()
-
-    teams = {
-        RED_TEAM: 'Sorsa-sepot',
-        YELLOW_TEAM: 'Kalevi-veljet'
-    }
-
-    game = init_new_game(game_id, teams, STONES_IN_END, TOTAL_ENDS)
-    create_game_in_dataservice(game_id, game)
-
-    team_red_jwt = generate_jwt(game[PROP_GAME_ID], RED_TEAM)
-    team_yellow_jwt = generate_jwt(game[PROP_GAME_ID], YELLOW_TEAM)
-    
-    resp = str(json.dumps(game)) + '\n\n\n'
-    resp += str(team_red_jwt) + '\n'
-    resp += str(team_yellow_jwt) + '\n'
-
-    return Response(status=200,
-                    response=resp,
                     mimetype='text/plain')
 
 
@@ -256,10 +232,8 @@ def init_new_game(game_id, teams, stones_in_end, total_ends):
 
     return game
 
-
 def get_other_team(team):
     return YELLOW_TEAM if team == RED_TEAM else RED_TEAM
-
 
 def get_team_with_hammer(current_holder, end_scores):
     if end_scores[RED_TEAM] == end_scores[YELLOW_TEAM]:
@@ -268,7 +242,6 @@ def get_team_with_hammer(current_holder, end_scores):
         return RED_TEAM
     return YELLOW_TEAM
 
-
 def get_team_with_first_delivery_turn(game):
     if (game[PROP_TOTAL_ENDS] <= len(game[PROP_END_SCORES]) and
         game[PROP_TOTAL_SCORE][RED_TEAM] != game[PROP_TOTAL_SCORE][YELLOW_TEAM]):
@@ -276,11 +249,9 @@ def get_team_with_first_delivery_turn(game):
         return 'none'
     return get_other_team(game[PROP_TEAM_WITH_HAMMER])
 
-
 def check_for_last_stone(stones_delivered, stones_in_end):
     stones_thrown = stones_delivered[RED_TEAM] + stones_delivered[YELLOW_TEAM]
     return stones_thrown + 1 >= stones_in_end * 2
-
 
 def generate_jwt(game_id, team):
     jwt_content = {}
@@ -288,19 +259,15 @@ def generate_jwt(game_id, team):
     jwt_content[PROP_TEAM] = team
     return jwt.encode(jwt_content, SECRET, algorithm='HS256')
 
-
 def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
-
 
 def get_game_from_dataservice(game_id):
     response = requests.get(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}')
     return response.json()
 
-
 def create_game_in_dataservice(game_id, game):
     response = requests.post(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
-
 
 def update_game_in_dataservice(game_id, game):
     response = requests.put(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
@@ -320,7 +287,6 @@ def get_teams(drawn_team, init_team, join_team):
             YELLOW_TEAM: join_team
         }
 
-
 def get_new_game_instructions(total_ends, stones_in_end, team):
     return f'''
 Hello and welcome to the amazing world of Curling!
@@ -338,7 +304,6 @@ You are participating in a game with {total_ends} ends having {stones_in_end} st
 {get_team_instructions(team)}
 '''
 
-
 def get_team_instructions(team):
     if (team == RED_TEAM):
         return 'You\'ll be playing with red stones and you have the first turn.'
@@ -348,7 +313,7 @@ def get_team_instructions(team):
 def get_delivery_instructions(jwt_token):
     return f'''    
 Usage (replace zeroes with suitable values):
-curl -X PUT "http://localhost/delivery?speed=0&angle=0&start_x=0" -H "Authorization: Bearer {jwt_token}"
+curl -X PUT -H "Authorization: Bearer {jwt_token}" "http://localhost/delivery?speed=0&angle=0&start_x=0"
 
 '''
 

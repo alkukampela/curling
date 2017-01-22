@@ -1,53 +1,45 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Jil;
 
 namespace Results.Models
 {    
     public class Game
     {
-        [JsonProperty("game_id")]
+        [JilDirective(Name="game_id")]
         public string GameId { get; set; }
 
+        [JilDirective(Name="teams")]
         public Teams Teams { get; set; }
 
-        [JsonProperty("stones_in_end")]
-        public int StonesIEnd { get; set; }
+        [JilDirective(Name="stones_in_end")]
+        public int StonesInEnd { get; set; }
 
-        [JsonProperty("total_ends")]
+        [JilDirective(Name="total_ends")]
         public int TotalEnds { get; set; }
 
-        [JsonProperty("stones_delivered")]
-        public StonesDelivered StonesDelivered { get; set; }
+        [JilDirective(Name="stones_delivered")]
+        public TeamIntPair StonesDelivered { get; set; }
 
-        [JsonProperty("end_scores")]
-        public IList<EndScore> EndScores { get; set; }
+        [JilDirective(Name="end_scores")]
+        public IList<TeamIntPair> EndScores { get; set; }
     }
 
     public class Teams
     {
-        [JsonProperty("team_1")]
+
+        [JilDirective(Name="team_1")]
         public string Team1 { get; set; }
 
-        [JsonProperty("team_2")]
+        [JilDirective(Name="team_2")]
         public string Team2 { get; set; }
     }
 
-    public class StonesDelivered
-    {
-        [JsonProperty("team_1")]
+    public class TeamIntPair {
+
+        [JilDirective(Name="team_1")]
         public int Team1 { get; set; }
 
-        [JsonProperty("team_2")]
-        public int Team_2 { get; set; }
-    }
-
-    public class EndScore {
-
-        [JsonProperty("team_1")]
-        public int Team1 { get; set; }
-
-        [JsonProperty("team_2")]
+        [JilDirective(Name="team_2")]
         public int Team_2 { get; set; }
     }
 }

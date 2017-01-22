@@ -1,17 +1,17 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+
+using Jil;
 
 namespace Results.Models
 {
     public class GameListItem
     {
-        [JsonProperty("game_id")]
+        [JilDirective(Name="game_id")]
         public string GameId { get; set; }
 
-        [JsonProperty("team_1")]
+        [JilDirective(Name="team_1")]
         public string Team1 { get; set; }
 
-        [JsonProperty("team_2")]
+        [JilDirective(Name="team_2")]
         public string Team2 { get; set; }
     }
 }

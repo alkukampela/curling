@@ -5,16 +5,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Results.Models;
 using Jil;
 using Jil.DeserializeDynamic;
 
-
 namespace Results.Controllers
 {
-
     [Route("")]
     public class ResultsController : Controller
     {
@@ -24,7 +20,27 @@ namespace Results.Controllers
         public async Task<IActionResult> Get()
         {
             var games = await this.FetchGames();
-            return Json(games);
+            return new ContentResult {
+                Content = JSON.Serialize(games),
+                ContentType = "application/json"
+            };
+        }
+
+        [HttpGet("{gameId}")]
+        public async Task<IActionResult> Get(string gameId)
+        {
+            try
+            {
+                var game = await this.FetchGame(gameId);
+                return new ContentResult {
+                    Content = JSON.Serialize(game),
+                    ContentType = "application/json"
+                };
+            }
+            catch (ArgumentException)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
         }
 
         private async Task<IList<GameListItem>> FetchGames()
@@ -34,8 +50,7 @@ namespace Results.Controllers
             {
                 try
                 {
-                    client.BaseAddress = new Uri(BASE_URL);
-                    var response = await client.GetAsync("/data-service/games");
+                    var response = await DoRequest(client, "/data-service/games");
                     var stringResponse = await response.Content.ReadAsStringAsync();
 
                     var gamesJson = JSON.DeserializeDynamic(stringResponse);
@@ -59,32 +74,17 @@ namespace Results.Controllers
             }
         }
 
-        [HttpGet("{gameId}")]
-        public async Task<IActionResult> Get(string gameId)
-        {
-            try
-            {
-                var game = await this.FetchGame(gameId);
-                return Json(game);
-            }
-            catch (ArgumentException)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound);
-            }
-        }
-
         private async Task<Game> FetchGame(string gameId)
         {
             using (var client = new HttpClient())
             {
                 try
                 {
-                    client.BaseAddress = new Uri(BASE_URL);
-                    var response = await client.GetAsync("/data-service/games/" + gameId);
+                    var response = await DoRequest(client, "/data-service/games/" + gameId);
                     if (response.IsSuccessStatusCode)
                     {
                         var stringResponse = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<Game>(stringResponse);
+                        return JSON.Deserialize<Game>(stringResponse);
                     }
                     else
                     {
@@ -98,5 +98,12 @@ namespace Results.Controllers
                 }
             }
         }
+
+        private async Task<HttpResponseMessage> DoRequest(HttpClient client, string endpoint) 
+        {
+            client.BaseAddress = new Uri(BASE_URL);
+            return await client.GetAsync(endpoint);
+        }
+
     }
 }
