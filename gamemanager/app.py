@@ -7,12 +7,14 @@ from flask import Flask, request, Response
 from flask_restful import reqparse
 import jwt
 
-
 app = Flask(__name__)
 
 SECRET = 'L1hamugi'
 ID_LENGTH = 7
-DATASERVICE_URL = 'http://gateway/data-service/games/'
+DATASERVICE_URL = 'http://gateway/data-service/'
+GAMES_ENDPOINT = 'games/'
+NEW_GAME_INIT = 'newgame/init'
+NEW_GAME_JOIN = 'newgame/join'
 
 RED_TEAM = 'team_1'
 YELLOW_TEAM = 'team_2'
@@ -37,7 +39,6 @@ PROP_DRAWN_TEAM = 'drawn_team'
 
 @app.route('/begin_game', methods=['POST'])
 def begin_game():
-
     parser = reqparse.RequestParser()
     parser.add_argument('team', help='Name of your team')
     parser.add_argument('ends', default=TOTAL_ENDS, required=False, 
@@ -46,21 +47,21 @@ def begin_game():
                         type=int, help='Number of stones in end (per team)')
 
     args = parser.parse_args()    
-    team_name = args['team'].strip()
+    team_name = args['team']
     total_ends = args['ends']
     stones_in_end = args['stones']
     
     if not team_name:
         return Response(status=400,
-                        response='Error: Team name cannot be empty')
+                        response='Error: Team name cannot be empty.\n')
 
     if total_ends < 1 or total_ends > 10:
         return Response(status=400,
-                        response='Error: Ends to be played must be between 1 and 10')
+                        response='Error: Ends to be played must be between 1 and 10.\n')
 
     if stones_in_end < 1 or stones_in_end > 8:
         return Response(status=400,
-                        response='Error: There must be between 1 and 8 stones in each end')
+                        response='Error: There must be between 1 and 8 stones in each end.\n')
 
     new_game = {
         PROP_GAME_ID: generate_new_id(),
@@ -69,6 +70,11 @@ def begin_game():
         PROP_TOTAL_ENDS: total_ends,
         PROP_STONES_IN_END: stones_in_end
     }
+    
+    response = requests.post(f'{DATASERVICE_URL}{NEW_GAME_INIT}', json = new_game)
+    if (response.status_code != 201):
+        return Response(status=500,
+                        response='Error during game initialization.\n')
 
     jwt_token = generate_jwt(new_game[PROP_GAME_ID], new_game[PROP_DRAWN_TEAM])
 
@@ -83,15 +89,61 @@ def begin_game():
                     response=instructions,
                     mimetype='text/plain')
 
-@app.route('/begin_game', methods=['POST'])
+@app.route('/join_game', methods=['POST'])
 def join_game():
-    pass
+    parser = reqparse.RequestParser()
+    parser.add_argument('team', help='Name of your team')
+
+    args = parser.parse_args()    
+    team_name = args['team']
+
+    if not team_name:
+        return Response(status=400,
+                        response='Error: Team name cannot be empty.\n')
+
+    new_game = requests.post(f'{DATASERVICE_URL}{NEW_GAME_JOIN}').json()
+
+    if not new_game:
+        return Response(status=400,
+                        response='Error: No game to join.\n')
+
+    game_id = new_game[PROP_GAME_ID]
+    joined_team = get_other_team(new_game[PROP_DRAWN_TEAM])
+
+    teams = get_teams(new_game[PROP_DRAWN_TEAM],
+                      new_game[PROP_TEAM_NAME],
+                      team_name)
+    
+    game = init_new_game(game_id,
+                         teams,
+                         new_game[PROP_STONES_IN_END],
+                         new_game[PROP_TOTAL_ENDS])
+
+    create_game_in_dataservice(game_id, game)
+
+    
+    jwt_token = generate_jwt(game_id, joined_team)
+
+    instructions = get_joined_game_instructions(new_game[PROP_TOTAL_ENDS], 
+                                                new_game[PROP_STONES_IN_END], 
+                                                joined_team)
+    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'))
+
+    return Response(status=200,
+                    response=instructions,
+                    mimetype='text/plain')
 
 
 @app.route('/dev/create')
 def dev_create_game():
     game_id = generate_new_id()
-    game = init_new_game(game_id)
+
+    teams = {
+        RED_TEAM: 'Sorsa-sepot',
+        YELLOW_TEAM: 'Kalevi-veljet'
+    }
+
+    game = init_new_game(game_id, teams, STONES_IN_END, TOTAL_ENDS)
     create_game_in_dataservice(game_id, game)
 
     team_red_jwt = generate_jwt(game[PROP_GAME_ID], RED_TEAM)
@@ -119,7 +171,6 @@ def get_game_status(jwt_token):
         return Response(status=404,
                         response='{"error": "Invalid game"}',
                         mimetype='application/json')
-
 
     if response_data[PROP_TEAM] != game[PROP_DELIVERY_TURN]:
         return Response(status=420,
@@ -178,17 +229,13 @@ def save_end_score(game_id):
     return Response(status=200)
 
 
-def init_new_game(game_id):
+def init_new_game(game_id, teams, stones_in_end, total_ends):
     game = {}
     game[PROP_GAME_ID] = game_id
     
-    teams = {
-        RED_TEAM: 'Sorsa-Sepot',
-        YELLOW_TEAM: 'Paha-Kalevit'
-    }
     game[PROP_TEAMS] = teams
-    game[PROP_STONES_IN_END] = STONES_IN_END
-    game[PROP_TOTAL_ENDS] = TOTAL_ENDS
+    game[PROP_STONES_IN_END] = stones_in_end
+    game[PROP_TOTAL_ENDS] = total_ends
 
     game[PROP_DELIVERY_TURN] = RED_TEAM
     # Red always starts so yellow has a hammer
@@ -247,34 +294,56 @@ def generate_new_id():
 
 
 def get_game_from_dataservice(game_id):
-    response = requests.get(f'{DATASERVICE_URL}{game_id}')
+    response = requests.get(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}')
     return response.json()
 
 
 def create_game_in_dataservice(game_id, game):
-    response = requests.post(f'{DATASERVICE_URL}{game_id}', json = game)
+    response = requests.post(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
 
 
 def update_game_in_dataservice(game_id, game):
-    response = requests.put(f'{DATASERVICE_URL}{game_id}', json = game)
+    response = requests.put(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
 
 def draw_a_team():
     return YELLOW_TEAM if random.randint(0, 1) else RED_TEAM
 
+def get_teams(drawn_team, init_team, join_team):
+    if drawn_team == YELLOW_TEAM:
+        return {
+            RED_TEAM: join_team,
+            YELLOW_TEAM: init_team
+        }
+    else:
+        return {
+            RED_TEAM: init_team,
+            YELLOW_TEAM: join_team
+        }
+
 
 def get_new_game_instructions(total_ends, stones_in_end, team):
-    if (team == RED_TEAM):
-        teamtext = 'You\'ll be playing with red stones and you have the first turn.'
-    else:
-        teamtext = 'You\'ll be playing with yellow stones and you have the second turn.'
-
     return f'''
 Hello and welcome to the amazing world of Curling!
 
 A new game was initialized with {total_ends} ends having {stones_in_end} stones in each.
-{teamtext}
-The game can start when the other team joins in.
+{get_team_instructions(team)}
+The game can start when your opponent joins the game.
 '''
+
+def get_joined_game_instructions(total_ends, stones_in_end, team):
+    return f'''
+Hello and welcome to the amazing world of Curling!
+
+You are participating in a game with {total_ends} ends having {stones_in_end} stones in each.
+{get_team_instructions(team)}
+'''
+
+
+def get_team_instructions(team):
+    if (team == RED_TEAM):
+        return 'You\'ll be playing with red stones and you have the first turn.'
+    else:
+        return 'You\'ll be playing with yellow stones and you have the second turn.'
 
 def get_delivery_instructions(jwt_token):
     return f'''    

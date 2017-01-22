@@ -37,17 +37,17 @@ function keys(pattern) {
   });
 }
 
-function pop(queue) {
+function getFromQueue(queue) {
   return new Promise(function(resolve, reject) {
-    client.lpop(queue, (err, result) =>
+    client.rpop(queue, (err, result) =>
       R.isNil(err) ? resolve(JSON.parse(result)) : reject(err)
     );
   });
 }
 
-function push(queue, value) {
+function putToQueue(queue, value) {
   return new Promise(function(resolve, reject) {
-    client.rpush(queue, JSON.stringify(value), (err, result) =>
+    client.lpush(queue, JSON.stringify(value), (err, result) =>
       R.isNil(err) ? resolve(result) : reject(err)
     );
   });
@@ -58,6 +58,6 @@ module.exports = {
   get: get,
   del: del,
   keys: keys,
-  pop: pop,
-  push: push
+  getFromQueue: getFromQueue,
+  putToQueue: putToQueue
 }
