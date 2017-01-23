@@ -1,0 +1,95 @@
+<html>
+<head>
+
+<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+
+<style type="text/css">
+  body {
+    background-color: #439ccc;
+    color: #296c99;
+    font-family: 'Bungee', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+  }
+
+#main {
+  text-align: center;
+}
+
+  #monkeys {
+    background-image: url(monkeys.png);
+    height: 460px;
+    width: 923px;
+    display: block;
+    position: absolute;
+    margin: auto;
+    margin-top: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+  }
+
+  .team_1 {
+
+    color: #ff7661
+  }
+
+  .team_2 {
+    color: #fff178
+  }
+
+  #games {
+    display: inline-block;
+
+    z-index: 100;
+    margin-top: 440px;
+  }
+
+  #games > ul > li
+  {
+    list-style: none;
+    font-size: 2em;
+    color: #cccccc;
+    text-shadow: 2px 2px #296c99;
+  }
+
+  a
+  {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+</style>
+
+</head>
+<body>
+<div id="main">
+  <div id="monkeys"></div>
+  <div id="games">
+    <ul>
+      <li>
+        <a href="#">
+          <span class="team_1">Sorsa-Sepot</span> - <span class="team_2">Kalevi-Veljet</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <span class="team_1">Hermorauniot</span> - <span class="team_2">Luu-5</span>
+        </a>
+      </li>    
+      <li>
+        <a href="#">
+          <span class="team_1">Luuta-Sport</span> - <span class="team_2">Rockers</span>
+        </a>
+      </li>    
+      <li>
+        <a href="#">
+          <span class="team_1">Pesänvartijat</span> - <span class="team_2">Sharpshooters</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
