@@ -32,6 +32,10 @@ asfasf
 <script>
 import { render } from 'curling-physics/lib/simulation'
 
+import redStone from './assets/stone_red_game.png'
+import yellowStone from './assets/stone_yellow_game.png'
+import track from './assets/track_cropped.png'
+
 // Sprites for the stones of the different teams
 // TODO support other teams than 1 & 2
 const sprites = {

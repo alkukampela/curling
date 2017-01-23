@@ -4,6 +4,13 @@
 
 ```
 cd frontend
-npm install --production
+npm install
 npm run build
+```
+
+## dev frontend
+```
+cd frontend
+npm install
+npm run dev
 ```
