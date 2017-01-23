@@ -1,0 +1,39 @@
+logLevel = "DEBUG"
+
+defaultEntryPoints = ["http", "https"]
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+[acme]
+  email = "info@foobarcurling.com"
+  storageFile = "/etc/traefik/acme/acme.json"
+  #onDemand = true
+  #caServer = "https://acme-staging.api.letsencrypt.org/directory"
+  entryPoint = "https"
+
+[[acme.domains]]
+  main = "curling.goforecrew.com"
+
+[file]
+  watch = true
+
+[backends]
+  [backends.gateway]
+    [backends.gateway.servers.server1]
+    url = "http://gateway:8888"
+
+
+[frontends]
+  [frontends.gateway]
+    backend = "gateway"
+    passHostHeader = true
+      [frontends.gateway.routes.test_1]
+        rule = "Host: curling.goforecrew.com"
+      [frontends.gateway.routes.test_2]
+        rule = "Path: /delivery,  /data-service/games"

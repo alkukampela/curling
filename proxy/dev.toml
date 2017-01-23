@@ -1,0 +1,23 @@
+logLevel = "DEBUG"
+
+defaultEntryPoints = ["http"]
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+
+[file]
+  watch = true
+
+[backends]
+  [backends.gateway]
+    [backends.gateway.servers.server1]
+    url = "http://gateway:8888"
+
+[frontends]
+  [frontends.gateway]
+    backend = "gateway"
+    passHostHeader = true
+      [frontends.gateway.routes.test_1]
+        rule = "Path: /delivery,  /data-service/games"
+
+# https://docs.traefik.io/basics/#frontends        

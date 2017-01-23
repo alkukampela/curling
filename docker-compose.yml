@@ -1,6 +1,29 @@
 version: '2'
 
 services:
+  proxy:
+    image: traefik:v1.1.2
+    ports:
+      - "80:80"
+    volumes:
+      - "./proxy/dev.toml:/etc/traefik/traefik.toml"
+
+  gateway:
+    image: traefik:v1.1.2
+    ports:
+      - "8888:8888"
+      - "8088:8088"
+    volumes:
+      - "./gateway/dev.toml:/etc/traefik/traefik.toml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.backend=gateway"
+
+  redis:
+    image: redis:2.8.19
+    ports:
+      - 6379:6379
+
   broadcaster:
     build:
       context: ./broadcaster
@@ -24,11 +47,6 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/data-service"
       - "traefik.port=3721"
       - "traefik.backend=data-service"
-
-  redis:
-    image: redis:2.8.19
-    ports:
-      - 6379:6379
 
   delivery:
     build:
@@ -71,18 +89,6 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/scores"
       - "traefik.port=5000"
       - "traefik.backend=scores"
-
-
-  gateway:
-    image: traefik:v1.1.2
-    ports:
-      - "80:80"
-      - "8088:8088"
-    volumes:
-      - "./gateway/dev.toml:/etc/traefik/traefik.toml"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    labels:
-      - "traefik.backend=gateway"
 
   physics:
     build:
