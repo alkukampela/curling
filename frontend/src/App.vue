@@ -30,19 +30,21 @@ asfasf
 </template>
 
 <script>
-import { render } from 'curling-physics/lib/simulation'
+import { renderSimulation } from 'curling-physics/lib/simulation'
 
 import redStone from './assets/stone_red_game.png'
 import yellowStone from './assets/stone_yellow_game.png'
 import track from './assets/track_cropped.png'
 
+console.log(redStone)
+
 // Sprites for the stones of the different teams
 // TODO support other teams than 1 & 2
 const sprites = {
-  '1': 'src/assets/stone_red_game.png',
-  '2': 'src/assets/stone_yellow_game.png',
+  'team_1': 'dist/stone_red_game.png',
+  'team_2': 'dist/stone_yellow_game.png',
 }
-const background = 'src/assets/track_cropped.png'
+const background = 'dist/track_cropped.png'
 
 // Parse game id from URL params
 const params = new URLSearchParams(window.location.search.slice(1))
@@ -57,7 +59,7 @@ socket.on('connect', function() {
 socket.on('new_delivery', function(data) {
   const iceSurface = document.getElementById('ice-surface')
   const { delivery, stones } = data;
-  render(delivery, stones, sprites, background, iceSurface)
+  renderSimulation(delivery, stones, sprites, background, iceSurface)
 });
 
 export default {
