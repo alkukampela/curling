@@ -18,6 +18,6 @@ defaultEntryPoints = ["http"]
     backend = "gateway"
     passHostHeader = true
       [frontends.gateway.routes.test_1]
-        rule = "Path: /delivery,  /data-service/games"
+        rule = "Path: /delivery, /gamemanager/begin_game, /gamemanager/join_game, /results, /results/{game_id}"
 
 # https://docs.traefik.io/basics/#frontends        

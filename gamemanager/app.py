@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 SECRET = 'L1hamugi'
 ID_LENGTH = 7
-DATASERVICE_URL = 'http://gateway/data-service/'
+DATASERVICE_URL = 'http://gateway:8888/data-service/'
 GAMES_ENDPOINT = 'games/'
 NEW_GAME_INIT = 'newgame/init'
 NEW_GAME_JOIN = 'newgame/join'
@@ -213,16 +213,14 @@ def init_new_game(game_id, teams, stones_in_end, total_ends):
     game[PROP_STONES_IN_END] = stones_in_end
     game[PROP_TOTAL_ENDS] = total_ends
 
-    game[PROP_DELIVERY_TURN] = RED_TEAM
     # Red always starts so yellow has a hammer
+    game[PROP_DELIVERY_TURN] = RED_TEAM
     game[PROP_TEAM_WITH_HAMMER] = YELLOW_TEAM
 
-    stones_delivered = {
+    game[PROP_STONES_DELIVERED] = {
         RED_TEAM: 0,
         YELLOW_TEAM: 0
     }
-
-    game[PROP_STONES_DELIVERED] = stones_delivered
 
     game[PROP_END_SCORES] = []
     game[PROP_TOTAL_SCORE] = {

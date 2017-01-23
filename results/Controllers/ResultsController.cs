@@ -14,7 +14,7 @@ namespace Results.Controllers
     [Route("")]
     public class ResultsController : Controller
     {
-        private const string BASE_URL = "http://gateway";
+        private const string BASE_URL = "http://gateway:8888";
         
         [HttpGet]
         public async Task<IActionResult> Get()

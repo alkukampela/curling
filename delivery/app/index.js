@@ -7,11 +7,12 @@ const app = express();
 
 app.use(morgan('combined'));
 
-const broadcaster = 'http://gateway/broadcaster/'
-const gameManager = 'http://gateway/gamemanager/';
-const stoneStore = 'http://gateway/data-service/stones/'
-const scoreCalculator = 'http://gateway/scores/'
-const simulator = 'http://gateway/physics/'
+const gateway = 'http://gateway:8888'
+const broadcaster = gateway + '/broadcaster/';
+const gameManager = gateway + '/gamemanager/';
+const stoneStore = gateway + '/data-service/stones/';
+const scoreCalculator = gateway + '/scores/';
+const simulator = gateway + '/physics/';
 
 function getGame(jwtToken) {
   console.log('getGame', jwtToken);
