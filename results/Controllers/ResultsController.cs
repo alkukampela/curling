@@ -20,10 +20,7 @@ namespace Results.Controllers
         public async Task<IActionResult> Get()
         {
             var games = await this.FetchGames();
-            return new ContentResult {
-                Content = JSON.Serialize(games),
-                ContentType = "application/json"
-            };
+            return GetJsonResult(games);
         }
 
         [HttpGet("{gameId}")]
@@ -32,10 +29,7 @@ namespace Results.Controllers
             try
             {
                 var game = await this.FetchGame(gameId);
-                return new ContentResult {
-                    Content = JSON.Serialize(game),
-                    ContentType = "application/json"
-                };
+                return GetJsonResult(game);
             }
             catch (ArgumentException)
             {
@@ -105,5 +99,13 @@ namespace Results.Controllers
             return await client.GetAsync(endpoint);
         }
 
+
+        private static ContentResult GetJsonResult(object value)
+        {
+            return new ContentResult {
+                Content = JSON.Serialize(value),
+                ContentType = "application/json"
+            };
+        }
     }
 }
