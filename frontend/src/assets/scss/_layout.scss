@@ -47,7 +47,7 @@ heading {
       display: block;
       float: left;
       background: transparent url('./assets/stone_empty_turn.png') no-repeat;
-      @include stone();
+      @include addRotate();
     }
 
     &.team2 {
@@ -62,12 +62,14 @@ heading {
     &.active {
       span {
         background-image: url('./assets/stone_yellow_turn.png');
+        @include removeRotate();
       }
     }
 
     &.team2.active {
       span {
         background-image: url('./assets/stone_red_turn.png');
+        @include removeRotate();
       }
     }
   }
@@ -86,8 +88,6 @@ heading {
 h2,
 h3 {
   text-transform: uppercase;
-
-
   margin: 0 0 0 0;
 }
 
@@ -129,10 +129,11 @@ h3 {
       width: 42px;
       height: 42px;
       list-style: none;
-      @include stone();
+      @include addRotate();
 
       &.active {
         background-image: url('./assets/stone_yellow_rounds.png');
+        @include removeRotate();
       }
     }
   }
@@ -141,6 +142,7 @@ h3 {
     li {
       &.active {
         background-image: url('./assets/stone_red_rounds.png');
+        @include removeRotate();
       }
     }
   }

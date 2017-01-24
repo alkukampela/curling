@@ -6,6 +6,10 @@
   text-shadow: 5px 5px 0px rgba(0,0,0,0.1);
 }
 
-@mixin stone(){
+@mixin addRotate(){
   transform: rotate(45deg);
+}
+
+@mixin removeRotate(){
+  transform: rotate(0deg);
 }
