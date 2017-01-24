@@ -38,18 +38,35 @@ heading {
     text-align: right;
     @include text-shadow();
     font-size: 6em;
-    background: $bostonBlue url('./assets/stone_empty_turn.png')  20% center no-repeat;
+    background: $bostonBlue;
+
+    span {
+      width: 52px;
+      height: 52px;
+      margin-top: 1.5rem;
+      display: block;
+      float: left;
+      background: transparent url('./assets/stone_empty_turn.png') no-repeat;
+      @include stone();
+    }
 
     &.team2 {
       color: $bittersweet;
       text-align: left;
-      background-position: 80%;
+
+      span {
+        float: right;
+      }
     }
 
     &.active {
-      background-image: url('./assets/stone_yellow_turn.png');
+      span {
+        background-image: url('./assets/stone_yellow_turn.png');
+      }
+    }
 
-      &.team2 {
+    &.team2.active {
+      span {
         background-image: url('./assets/stone_red_turn.png');
       }
     }
@@ -69,7 +86,7 @@ heading {
 h2,
 h3 {
   text-transform: uppercase;
-  @include text-shadow();
+
 
   margin: 0 0 0 0;
 }
@@ -112,6 +129,7 @@ h3 {
       width: 42px;
       height: 42px;
       list-style: none;
+      @include stone();
 
       &.active {
         background-image: url('./assets/stone_yellow_rounds.png');

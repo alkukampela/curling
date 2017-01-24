@@ -5,3 +5,7 @@
 @mixin text-shadow(){
   text-shadow: 5px 5px 0px rgba(0,0,0,0.1);
 }
+
+@mixin stone(){
+  transform: rotate(45deg);
+}

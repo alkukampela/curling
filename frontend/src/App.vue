@@ -63,8 +63,14 @@
           </tbody>
         </table>
         <div class="turns">
-          <div class="turn active">1</div>
-          <div class="turn team2">1</div>
+          <div class="turn active">
+            1
+            <span></span>
+          </div>
+          <div class="turn team2">
+            1
+            <span></span>
+          </div>
         </div>
       </div>
 
