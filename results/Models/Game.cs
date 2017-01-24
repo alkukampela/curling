@@ -17,11 +17,17 @@ namespace Results.Models
         [JilDirective(Name="total_ends")]
         public int TotalEnds { get; set; }
 
+        [JilDirective(Name="team_with_hammer")]
+        public string TeamWithHammer { get; set; }
+
         [JilDirective(Name="stones_delivered")]
         public TeamIntPair StonesDelivered { get; set; }
 
         [JilDirective(Name="end_scores")]
         public IList<TeamIntPair> EndScores { get; set; }
+
+        [JilDirective(Name="total_score")]
+        public TeamIntPair TotalScore { get; set; }
     }
 
     public class Teams
