@@ -20,6 +20,9 @@ namespace Results.Models
         [JilDirective(Name="team_with_hammer")]
         public string TeamWithHammer { get; set; }
 
+        [JilDirective(Name="delivery_turn")]
+        public string DeliveryTurn { get; set; }
+
         [JilDirective(Name="stones_delivered")]
         public TeamIntPair StonesDelivered { get; set; }
 
@@ -46,6 +49,6 @@ namespace Results.Models
         public int Team1 { get; set; }
 
         [JilDirective(Name="team_2")]
-        public int Team_2 { get; set; }
+        public int Team2 { get; set; }
     }
 }
