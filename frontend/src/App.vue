@@ -1,26 +1,91 @@
 <template>
   <div id="app">
     <heading>
-      <div class="team team1">
-        <h2>Joukkue</h2>
-        <h3>pelaaja</h3>
+      <div class="team">
+        <h2 class="team1">Joukkue</h2>
+        <h3 class="team1">pelaaja</h3>
         <div class="deliveries">
-asgasg
+          <ul>
+            <li class="active"></li>
+            <li class="active"></li>
+            <li class="active"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+          <div class="clear"></div>
         </div>
       </div>
 
-      <div class="scores">
-        pisteet
-      </div>
-
-      <div class="team team2">
-        <h2>Joukkue</h2>
-        <h3>pelaaja</h3>
-        <div class="deliveries">
-asfasf
+      <div class="stats">
+        <table cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th class="played">1</th>
+              <th class="played">2</th>
+              <th class="played">3</th>
+              <th class="active">4</th>
+              <th>5</th>
+              <th>6</th>
+              <th>7</th>
+              <th>8</th>
+              <th>9</th>
+              <th>10</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td class="team1">3</td>
+              <td>2</td>
+              <td class="active">-</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>0</td>
+              <td class="team2">3</td>
+              <td class="active">-</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="turns">
+          <div class="turn active">1</div>
+          <div class="turn team2">1</div>
         </div>
       </div>
-    </header>
+
+      <div class="team">
+        <h2 class="team2">Joukkue</h2>
+        <h3>pelaaja</h3>
+        <div class="deliveries">
+          <ul class="team2">
+            <li class="active"></li>
+            <li class="active"></li>
+            <li class="active"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+          <div class="clear"></div>
+        </div>
+      </div>
+    </heading>
     <content>
       content
     <div id="ice-surface">

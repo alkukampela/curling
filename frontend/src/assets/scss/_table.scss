@@ -1,0 +1,48 @@
+table {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+th {
+  margin-bottom: 2px;
+}
+
+tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+th, td {
+  width: 9.5%;
+}
+
+th {
+  padding: 0.2rem 0;
+  background: $bostonBlue;
+  color: $blumine;
+  font-size: 1.2rem;
+
+  &.active {
+    color: $white;
+  }
+
+  &.played {
+    color: $aquaIsland;
+  }
+
+}
+
+td {
+  padding: 0.5rem 0;
+  background: $cornflowerBlue;
+  font-size: 1.5rem;
+  color: $white;
+  @include text-shadow();
+
+  &.active {
+    background-color: $blumine;
+  }
+
+}

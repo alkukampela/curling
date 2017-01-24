@@ -1,5 +1,6 @@
 body {
   background: $towerGray;
+  font-family: 'Bungee', Helvetica, Arial, sans-serif;
   padding: 0 0 0 0;
   margin: 0 0 0 0;
 }
@@ -8,65 +9,121 @@ heading {
   background: $shakespeare;
   display: block;
   width: 100;
-  padding: 1em;
+  padding: 2rem;
   @include shadow();
-}
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
-content {
-
+  .stats,
+  .team  {
+    width: 32.5%;
+  }
 }
 
 .clear {
   clear: both;
 }
 
-.scores,
-.team  {
-  width: 32.5%;
-  margin-left: 1.25%;
-  float: left;
+.turns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
-  &:first-child {
-    margin-left: 0;
+  .turn {
+    width: 49.5%;
+    box-sizing: border-box;
+    padding: 1rem 1rem;
+    color: $kournikova;
+    text-align: right;
+    @include text-shadow();
+    font-size: 6em;
+    background: $bostonBlue url('./assets/stone_empty_turn.png')  20% center no-repeat;
+
+    &.team2 {
+      color: $bittersweet;
+      text-align: left;
+      background-position: 80%;
+    }
+
+    &.active {
+      background-image: url('./assets/stone_yellow_turn.png');
+
+      &.team2 {
+        background-image: url('./assets/stone_red_turn.png');
+      }
+    }
   }
 }
 
+.team1 {
+  background: $kournikova;
+  color: $jellyBean;
+}
+
+.team2 {
+  background: $bittersweet;
+  color: $white;
+}
+
+h2,
+h3 {
+  text-transform: uppercase;
+  @include text-shadow();
+
+  margin: 0 0 0 0;
+}
+
+h2 {
+  margin-bottom: 8px;
+  font-size: 2.7rem;
+  padding: 1rem 1rem;
+}
+
+h3 {
+  font-size: 2em;
+  background: $cornflowerBlue;
+  color: $bostonBlue;
+  padding: 0.5rem 1rem
+}
+
 .team {
-  h2,
-  h3 {
-    background: $kournikova;
-    color: $jellyBean;
-    font-family: 'Bungee', Helvetica, Arial, sans-serif;
-    text-transform: uppercase;
-    @include text-shadow();
-
-    margin: 0 0 0 0;
-    padding: 0.5em;
+  &:last-child {
+    text-align: right;
   }
 
-  h2 {
-    margin-bottom: 0.3em;
-    font-size: 3em;
-  }
-
-  h3 {
-    font-size: 2em;
-  }
 
   .deliveries{
     background: $bostonBlue;
-    padding: 1em;
-  }
+    padding: 1em 0;
 
-  &.team2 {
-    h2 {
-      background: $bittersweet;
-      color: $white;
+    ul {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+       align-content: flex-start;
+      flex-wrap: wrap;
+      padding: 0 1rem;
+      background: transparent;
     }
 
-    h3 {
-      background: $cornflowerBlue;
-      color: $white;
+    li {
+      background: transparent url('./assets/stone_empty_rounds.png') no-repeat;
+      width: 42px;
+      height: 42px;
+      list-style: none;
+
+      &.active {
+        background-image: url('./assets/stone_yellow_rounds.png');
+      }
+    }
+  }
+
+  .team2 {
+    li {
+      &.active {
+        background-image: url('./assets/stone_red_rounds.png');
+      }
     }
   }
 }
