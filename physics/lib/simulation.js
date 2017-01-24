@@ -6,7 +6,7 @@ const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 const FRICTION = 0.02
 const RESTITUTION = 0.1
 const STONE_RADIUS = 10
-const HOUSE_RADIUS = 50
+const HOUSE_RADIUS = 245
 
 // Stones out of bounds are removed from the sheet.
 // The simulation is stopped when there are either no stones
