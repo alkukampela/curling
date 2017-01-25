@@ -1,22 +1,25 @@
 import Matter from 'matter-js'
 const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
 
-// TODO: adjust the values (radii, bounds) to match visualization, sensible
-//       restitution
-const FRICTION = 0.02
+const FRICTION = 0.015
 const RESTITUTION = 0.1
-const STONE_RADIUS = 10
+
+const STONE_RADIUS = 31
 const HOUSE_RADIUS = 245
+const SHEET_WIDTH = 820
+const SHEET_HEIGHT = 2460
+const BUTTON_Y = 498
 
 // Stones out of bounds are removed from the sheet.
 // The simulation is stopped when there are either no stones
 // inside bounds or all the stones are slower than MIN_SPEED.
 const BOUNDS = {
-  min: { x: -100, y: -100 },
-  max: { x: 100, y: 500 },
+  min: { x: -SHEET_WIDTH/2, y: -BUTTON_Y },
+  max: { x: SHEET_WIDTH/2, y: SHEET_HEIGHT-BUTTON_Y }
 }
 const MIN_SPEED = 0.01
 
+// FIXME rename angle to line, speed to weight
 const getVelocity = (speed, angle) => {
   const vx = speed * Math.cos(angle * Math.PI/180)
   const vy = -speed * Math.cos((90 - angle) * Math.PI/180)
@@ -26,14 +29,12 @@ const getVelocity = (speed, angle) => {
 const createStone = (x, y, team, sprites) => {
   const options = {
     frictionAir: FRICTION,
-    restitution: RESTITUTION,
+    restitution: RESTITUTION
   }
   if (sprites !== undefined) {
     options.render = {
       sprite: {
-        texture: sprites[team],
-        xScale: 1/3,
-        yScale: 1/3
+        texture: sprites[team]
       }
     }
   }
@@ -82,6 +83,7 @@ const simulate = (delivery, stones) => {
   const engine = createEngine(matterStones)
   const world = engine.world
 
+  // URGENT FIXME use ramda
   while (!shouldStop(world.bodies)) {
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
     Engine.update(engine, engine.timing.delta)
@@ -92,7 +94,6 @@ const simulate = (delivery, stones) => {
 }
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
-
   // Clear the element of potential previous renders
   while (element.firstChild) {
     element.removeChild(element.firstChild);
@@ -108,10 +109,10 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
     options: {
       hasBounds: true,
       background: background,
-      height: 2 * (BOUNDS.max.y - BOUNDS.min.y),
-      width: 2 * (BOUNDS.max.x - BOUNDS.min.x),
-      wireframes: false,
-    },
+      height: SHEET_HEIGHT,
+      width: SHEET_WIDTH,
+      wireframes: false
+    }
   })
 
   Events.on(renderer, 'afterRender', () => {
