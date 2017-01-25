@@ -26,10 +26,11 @@ const getVelocity = (speed, angle) => {
   return Vector.create(vx, vy)
 }
 
-const createStone = (x, y, team, sprites) => {
+const createStone = (x, y, team, angle, sprites) => {
   const options = {
     frictionAir: FRICTION,
-    restitution: RESTITUTION
+    restitution: RESTITUTION,
+    angle: angle
   }
   if (sprites !== undefined) {
     options.render = {
@@ -44,10 +45,11 @@ const createStone = (x, y, team, sprites) => {
 }
 
 const createStones = (delivery, stones, sprites) => {
-  const stationary = stones.map(s => createStone(s.x, s.y, s.team, sprites))
+  const stationary = stones.map(s => createStone(s.x, s.y, s.team, s.angle, sprites))
   const delivered = createStone(delivery.start_x,
                                 BOUNDS.max.y,
                                 delivery.team,
+                                0,
                                 sprites)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
   return [delivered, ...stationary]
@@ -71,7 +73,8 @@ const createEngine = matterStones => {
 const stoneToJson = stone => {
   const { x, y } = stone.position
   const team = stone.team
-  return { x, y, team }
+  const angle = stone.angle
+  return { x, y, team, angle }
 }
 
 const isOutOfBounds = stone => !Bounds.overlaps(stone.bounds, BOUNDS)
