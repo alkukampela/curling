@@ -101,6 +101,7 @@
 
 <script>
 import { renderSimulation } from 'curling-physics/lib/simulation'
+import api from './api';
 
 import redStone from './assets/stone_red_game.png'
 import yellowStone from './assets/stone_yellow_game.png'
@@ -128,7 +129,8 @@ socket.on('connect', function() {
 socket.on('new_delivery', function(data) {
   const iceSurface = document.getElementById('ice-surface')
   const { delivery, stones } = data;
-  renderSimulation(delivery, stones, sprites, background, iceSurface)
+  renderSimulation(delivery, stones, sprites, background, iceSurface);
+  api.getResults(game_id).then(result => console.log(result));
 });
 
 export default {
