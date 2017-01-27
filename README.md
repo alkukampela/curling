@@ -32,6 +32,5 @@ npm run dev
     POST http://localhost/gamemanager/join_game?team=Kakkosjengi
 
     This has also very important reply!
-6. Go to http://localhost/results and copy game_id
-7. Go to http://localhost:8080/?game_id={game_id}
-8. Curl like there's no tomorrow!
+6. Go to page linked in team registering reply
+7. Curl like there's no tomorrow!
