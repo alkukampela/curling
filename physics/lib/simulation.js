@@ -26,11 +26,11 @@ const getVelocity = (speed, angle) => {
   return Vector.create(vx, vy)
 }
 
-const createStone = (x, y, team, angle, sprites) => {
+const createStone = (x, y, angle, team, sprites) => {
   const options = {
     frictionAir: FRICTION,
     restitution: RESTITUTION,
-    angle: angle
+    angle
   }
   if (sprites !== undefined) {
     options.render = {
@@ -45,11 +45,11 @@ const createStone = (x, y, team, angle, sprites) => {
 }
 
 const createStones = (delivery, stones, sprites) => {
-  const stationary = stones.map(s => createStone(s.x, s.y, s.team, s.angle, sprites))
+  const stationary = stones.map(s => createStone(s.x, s.y, s.angle, s.team, sprites))
   const delivered = createStone(delivery.start_x,
                                 BOUNDS.max.y,
-                                delivery.team,
                                 0,
+                                delivery.team,
                                 sprites)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
   return [delivered, ...stationary]
@@ -98,6 +98,7 @@ const simulate = (delivery, stones) => {
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
   // Clear the element of potential previous renders
+  // URGENT URGENT URGENT FIXME use ramda
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
