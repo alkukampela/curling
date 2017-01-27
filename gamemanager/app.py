@@ -12,6 +12,8 @@ app = Flask(__name__)
 SECRET = 'L1hamugi'
 ID_LENGTH = 7
 DATASERVICE_URL = 'http://gateway:8888/data-service/'
+DELIVERY_URL = 'http://localhost/delivery'
+GAME_URL = 'http://localhost?game_id='
 GAMES_ENDPOINT = 'games/'
 NEW_GAME_INIT = 'newgame/init'
 NEW_GAME_JOIN = 'newgame/join'
@@ -63,8 +65,9 @@ def begin_game():
         return Response(status=400,
                         response='Error: There must be between 1 and 8 stones in each end.\n')
 
+    game_id = generate_new_id()
     new_game = {
-        PROP_GAME_ID: generate_new_id(),
+        PROP_GAME_ID: game_id,
         PROP_TEAM_NAME: team_name,
         PROP_DRAWN_TEAM: draw_a_team(),
         PROP_TOTAL_ENDS: total_ends,
@@ -76,13 +79,13 @@ def begin_game():
         return Response(status=500,
                         response='Error during game initialization.\n')
 
-    jwt_token = generate_jwt(new_game[PROP_GAME_ID], new_game[PROP_DRAWN_TEAM])
+    jwt_token = generate_jwt(game_id, new_game[PROP_DRAWN_TEAM])
 
     instructions = get_new_game_instructions(new_game[PROP_TOTAL_ENDS], 
                                              new_game[PROP_STONES_IN_END], 
                                              new_game[PROP_DRAWN_TEAM])
 
-    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'))
+    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'), game_id)
 
     print(json.dumps(new_game))
     return Response(status=200,
@@ -127,7 +130,7 @@ def join_game():
                                                 joined_team)
 
     jwt_token = generate_jwt(game_id, joined_team)
-    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'))
+    instructions += get_delivery_instructions(jwt_token.decode('UTF-8'), game_id)
 
     return Response(status=200,
                     response=instructions,
@@ -308,10 +311,12 @@ def get_team_instructions(team):
     else:
         return 'You\'ll be playing with yellow stones and you have the second turn.'
 
-def get_delivery_instructions(jwt_token):
+def get_delivery_instructions(jwt_token, game_id):
     return f'''    
 Usage (replace zeroes with suitable values):
-curl -X PUT -H "Authorization: Bearer {jwt_token}" "http://localhost/delivery?speed=0&angle=0&start_x=0"
+curl -X PUT -H "Authorization: Bearer {jwt_token}" "{DELIVERY_URL}?speed=0&angle=0&start_x=0"
+
+To watch the game, go to {GAME_URL}{game_id}
 
 '''
 

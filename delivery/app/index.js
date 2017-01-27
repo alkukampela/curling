@@ -8,7 +8,7 @@ const app = express();
 app.use(morgan('combined'));
 
 const gateway = 'http://gateway:8888'
-const broadcaster = gateway + '/broadcaster/';
+const broadcaster = gateway + '/broadcaster/publish/';
 const gameManager = gateway + '/gamemanager/';
 const stoneStore = gateway + '/data-service/stones/';
 const scoreCalculator = gateway + '/scores/';

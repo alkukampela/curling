@@ -50,7 +50,7 @@ heading {
       @include addRotate();
     }
 
-    &.team2 {
+    &.team_2 {
       color: $bittersweet;
       text-align: left;
 
@@ -66,7 +66,7 @@ heading {
       }
     }
 
-    &.team2.active {
+    &.team_2.active {
       span {
         background-image: url('./assets/stone_red_turn.png');
         @include removeRotate();
@@ -75,12 +75,12 @@ heading {
   }
 }
 
-.team1 {
+.team_1 {
   background: $kournikova;
   color: $jellyBean;
 }
 
-.team2 {
+.team_2 {
   background: $bittersweet;
   color: $white;
 }
@@ -138,7 +138,7 @@ h3 {
     }
   }
 
-  .team2 {
+  .team_2 {
     li {
       &.active {
         background-image: url('./assets/stone_red_rounds.png');

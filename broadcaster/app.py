@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, join_room
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-@app.route('/<game_id>', methods=['POST'])
+@app.route('/publish/<game_id>', methods=['POST'])
 def publish(game_id):
     socketio.emit('new_delivery', request.json, room=game_id)
     return Response(status=204)

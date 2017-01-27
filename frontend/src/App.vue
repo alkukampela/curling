@@ -2,8 +2,8 @@
   <div id="app">
     <heading>
       <div class="team">
-        <h2 class="team1">Joukkue</h2>
-        <h3 class="team1">pelaaja</h3>
+        <h2 class="team_1">Joukkue</h2>
+        <h3 class="team_1">pelaaja</h3>
         <div class="deliveries">
           <ul>
             <li class="active"></li>
@@ -38,7 +38,7 @@
           <tbody>
             <tr>
               <td>1</td>
-              <td class="team1">3</td>
+              <td class="team_1">3</td>
               <td>2</td>
               <td class="active">-</td>
               <td></td>
@@ -51,7 +51,7 @@
             <tr>
               <td>1</td>
               <td>0</td>
-              <td class="team2">3</td>
+              <td class="team_2">3</td>
               <td class="active">-</td>
               <td></td>
               <td></td>
@@ -75,10 +75,10 @@
       </div>
 
       <div class="team">
-        <h2 class="team2">Joukkue</h2>
+        <h2 class="team_2">Joukkue</h2>
         <h3>pelaaja</h3>
         <div class="deliveries">
-          <ul class="team2">
+          <ul class="team_2">
             <li class="active"></li>
             <li class="active"></li>
             <li class="active"></li>
@@ -93,7 +93,6 @@
       </div>
     </heading>
     <content>
-      content
     <div id="ice-surface">
     </div>
     </content>
@@ -110,7 +109,6 @@ import track from './assets/track_cropped.png'
 console.log(redStone)
 
 // Sprites for the stones of the different teams
-// TODO support other teams than 1 & 2
 const sprites = {
   'team_1': 'dist/stone_red_game.png',
   'team_2': 'dist/stone_yellow_game.png',
@@ -147,10 +145,9 @@ export default {
 
   @import 'assets/scss/_index.scss';
 
-
-#app {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+  #app {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+  }
 
 </style>
