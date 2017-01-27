@@ -12,6 +12,9 @@ defaultEntryPoints = ["http"]
   [backends.gateway]
     [backends.gateway.servers.server1]
     url = "http://gateway:8888"
+  [backends.frontend]
+    [backends.frontend.servers.server1]
+      url = "http://frontend"
 
 [frontends]
   [frontends.gateway]
@@ -19,5 +22,11 @@ defaultEntryPoints = ["http"]
     passHostHeader = true
       [frontends.gateway.routes.test_1]
         rule = "Path: /delivery, /gamemanager/begin_game, /gamemanager/join_game, /results, /results/{game_id}"
+  [frontends.frontend]
+    backend = "frontend"
+    passHostHeader = true
+      [frontenda.frontends.routes.test_1]
+        rule = "Path: /"
+
 
 # https://docs.traefik.io/basics/#frontends        

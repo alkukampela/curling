@@ -65,6 +65,10 @@ services:
     volumes:
       - "./frontend/index.html:/usr/share/nginx/html/index.html"
       - "./frontend/dist:/usr/share/nginx/html/dist"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/frontend"
+      - "traefik.port=80"
+      - "traefik.backend=frontend"
 
   gamemanager:
     build:
