@@ -37,10 +37,10 @@
           </thead>
           <tbody>
             <tr>
-              <td>1</td>
+              <td>0</td>
               <td class="team_1">3</td>
-              <td>2</td>
-              <td class="active">-</td>
+              <td>0</td>
+              <td class="active">H</td>
               <td></td>
               <td></td>
               <td></td>
@@ -49,10 +49,10 @@
               <td></td>
             </tr>
             <tr>
-              <td>1</td>
               <td>0</td>
-              <td class="team_2">3</td>
-              <td class="active">-</td>
+              <td>0</td>
+              <td class="team_2">2</td>
+              <td class="active"></td>
               <td></td>
               <td></td>
               <td></td>
@@ -63,12 +63,12 @@
           </tbody>
         </table>
         <div class="turns">
-          <div class="turn active">
-            1
+          <div class="turn active team_1">
+            3
             <span></span>
           </div>
-          <div class="turn team2">
-            1
+          <div class="turn team_2">
+            2
             <span></span>
           </div>
         </div>
