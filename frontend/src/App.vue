@@ -107,8 +107,6 @@ import redStone from './assets/stone_red_game.png'
 import yellowStone from './assets/stone_yellow_game.png'
 import track from './assets/track_cropped.png'
 
-console.log(redStone)
-
 // Sprites for the stones of the different teams
 const sprites = {
   'team_1': 'dist/stone_red_game.png',
@@ -120,7 +118,7 @@ const background = 'dist/track_cropped.png'
 const params = new URLSearchParams(window.location.search.slice(1))
 const game_id = params.get('game_id')
 
-const socket = io.connect('http://localhost:9999')
+const socket = io.connect('ws://localhost:9999')
 
 socket.on('connect', function() {
   socket.emit('subscribe', { game_id });
