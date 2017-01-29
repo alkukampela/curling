@@ -70,6 +70,13 @@ const createEngine = matterStones => {
   return engine
 }
 
+const createRunner = () => {
+  const runnerOptions = {
+    isFixed: true
+  }
+  return Matter.Runner.create(runnerOptions)
+}
+
 const stoneToJson = stone => {
   const { x, y } = stone.position
   const team = stone.team
@@ -89,7 +96,7 @@ const simulate = (delivery, stones) => {
   // URGENT FIXME use ramda
   while (!shouldStop(world.bodies)) {
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
-    Engine.update(engine, engine.timing.delta)
+    Engine.update(engine, 1000/60)
     Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp })
   }
 
@@ -105,6 +112,7 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
 
   const matterStones = createStones(delivery, stones, sprites)
   const engine = createEngine(matterStones)
+  const runner = createRunner()
 
   const renderer = Render.create({
     element,
@@ -125,7 +133,7 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
     }
   })
 
-  Engine.run(engine)
+  Matter.Runner.run(runner, engine)
   Render.run(renderer)
 }
 
