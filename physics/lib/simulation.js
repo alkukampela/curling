@@ -1,5 +1,6 @@
 import Matter from 'matter-js'
-const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds } = Matter
+import R from 'ramda'
+const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds, Runner } = Matter
 
 const FRICTION = 0.015
 const RESTITUTION = 0.1
@@ -14,15 +15,16 @@ const BUTTON_Y = 498
 // The simulation is stopped when there are either no stones
 // inside bounds or all the stones are slower than MIN_SPEED.
 const BOUNDS = {
-  min: { x: -SHEET_WIDTH/2, y: -BUTTON_Y },
-  max: { x: SHEET_WIDTH/2, y: SHEET_HEIGHT-BUTTON_Y }
+  min: { x: -SHEET_WIDTH / 2, y: -BUTTON_Y },
+  max: { x: SHEET_WIDTH / 2, y: SHEET_HEIGHT - BUTTON_Y }
 }
 const MIN_SPEED = 0.01
+const SIMULATION_STEP_MS = 1000 / 60
 
 // FIXME rename angle to line, speed to weight
 const getVelocity = (speed, angle) => {
-  const vx = speed * Math.cos(angle * Math.PI/180)
-  const vy = -speed * Math.cos((90 - angle) * Math.PI/180)
+  const vx = speed * Math.cos(angle * Math.PI / 180)
+  const vy = -speed * Math.cos((90 - angle) * Math.PI / 180)
   return Vector.create(vx, vy)
 }
 
@@ -46,12 +48,10 @@ const createStone = (x, y, angle, team, sprites) => {
 
 const createStones = (delivery, stones, sprites) => {
   const stationary = stones.map(s => createStone(s.x, s.y, s.angle, s.team, sprites))
-  const delivered = createStone(delivery.start_x,
-                                BOUNDS.max.y,
-                                0,
-                                delivery.team,
-                                sprites)
+
+  const delivered = createStone(delivery.start_x, BOUNDS.max.y, 0, delivery.team, sprites)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
+
   return [delivered, ...stationary]
 }
 
@@ -70,13 +70,6 @@ const createEngine = matterStones => {
   return engine
 }
 
-const createRunner = () => {
-  const runnerOptions = {
-    isFixed: true
-  }
-  return Matter.Runner.create(runnerOptions)
-}
-
 const stoneToJson = stone => {
   const { x, y } = stone.position
   const team = stone.team
@@ -85,55 +78,72 @@ const stoneToJson = stone => {
 }
 
 const isOutOfBounds = stone => !Bounds.overlaps(stone.bounds, BOUNDS)
+
 const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
-const shouldStop = stones => stones.length == 0 || !stones.some(isMoving)
+
+const isFinished = engine => (
+  engine.world.bodies.length === 0 || !engine.world.bodies.some(isMoving)
+)
 
 const simulate = (delivery, stones) => {
   const matterStones = createStones(delivery, stones)
   const engine = createEngine(matterStones)
-  const world = engine.world
 
-  // URGENT FIXME use ramda
-  while (!shouldStop(world.bodies)) {
+  const runStep = engine => {
     Events.trigger(engine, 'tick', { timestamp: engine.timing.timestamp })
-    Engine.update(engine, 1000/60)
+    Engine.update(engine, SIMULATION_STEP_MS)
     Events.trigger(engine, 'afterTick', { timestamp: engine.timing.timestamp })
+    return engine
   }
+  R.until(isFinished, runStep)(engine)
 
-  return world.bodies.map(stoneToJson)
+  return engine.world.bodies.map(stoneToJson)
 }
 
-const renderSimulation = (delivery, stones, sprites, background, element) => {
-  // Clear the element of potential previous renders
-  // URGENT URGENT URGENT FIXME use ramda
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
+const createRunner = () => {
+  const runnerOptions = {
+    isFixed: true,
+    delta: SIMULATION_STEP_MS
   }
+  return Runner.create(runnerOptions)
+}
 
-  const matterStones = createStones(delivery, stones, sprites)
-  const engine = createEngine(matterStones)
-  const runner = createRunner()
-
+const createRenderer = (engine, element, background) => {
   const renderer = Render.create({
     element,
     engine,
     bounds: BOUNDS,
     options: {
       hasBounds: true,
-      background: background,
+      background,
       height: SHEET_HEIGHT,
       width: SHEET_WIDTH,
       wireframes: false
     }
   })
-
   Events.on(renderer, 'afterRender', () => {
-    if (shouldStop(engine.world.bodies)) {
+    if (isFinished(engine)) {
       Render.stop(renderer)
     }
   })
+  return renderer
+}
 
-  Matter.Runner.run(runner, engine)
+const renderSimulation = (delivery, stones, sprites, background, element) => {
+
+  const isEmpty = e => !e.hasChildNodes()
+  const removeChild = element => {
+    element.removeChild(element.firstChild)
+    return element
+  }
+  R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
+
+  const matterStones = createStones(delivery, stones, sprites)
+  const engine = createEngine(matterStones)
+  const runner = createRunner()
+  const renderer = createRenderer(engine, element, background)
+
+  Runner.run(runner, engine)
   Render.run(renderer)
 }
 

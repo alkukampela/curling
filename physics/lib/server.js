@@ -4,10 +4,10 @@ import morgan from 'morgan'
 
 import { simulate, HOUSE_RADIUS, STONE_RADIUS } from './simulation'
 
-const server = express();
-server.use(bodyParser.json());
+const server = express()
+server.use(bodyParser.json())
 
-server.use(morgan('combined'));
+server.use(morgan('combined'))
 
 server.post('/simulate', (req, res) => {
   const { delivery, stones } = req.body
@@ -20,7 +20,7 @@ server.post('/simulate', (req, res) => {
 server.get('/radii', (req, res) => {
   res.status(200).json({
     house: HOUSE_RADIUS,
-    stone: STONE_RADIUS,
+    stone: STONE_RADIUS
   })
 })
 
