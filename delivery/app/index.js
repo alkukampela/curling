@@ -14,6 +14,13 @@ const stoneStore = gateway + '/data-service/stones/';
 const scoreCalculator = gateway + '/scores/';
 const simulator = gateway + '/physics/';
 
+const SPEED_INPUT_MIN = 0;
+const SPEED_INPUT_MAX = 10;
+const SPEED_OUTPUT_MIN = 17;
+const SPEED_OUTPUT_MAX = 50;
+const ANGLE_INPUT_MIN = 0;
+const ANGLE_INPUT_MAX = 180;
+
 function getGame(jwtToken) {
   console.log('getGame', jwtToken);
 
@@ -27,8 +34,25 @@ function getStones(gameId) {
   return axios.get(stoneStore + gameId);
 }
 
-function validateDeliveryParams(params) {
-  return !R.any(R.isNil, R.props(['speed', 'angle', 'start_x'], params));
+function validateDeliveryParams(speed, angle, start_x) {
+  if (R.any(isNaN)([speed, angle, start_x]))
+  {
+    return "speed, angle and start_x must be numeric";
+  }
+
+  speed = Number(speed);
+  if (speed < SPEED_INPUT_MIN || speed > SPEED_INPUT_MAX)
+  {
+    return `speed must be between ${SPEED_INPUT_MIN} and ${SPEED_INPUT_MAX}`;
+  }
+
+  angle = Number(angle);
+  if (angle < ANGLE_INPUT_MIN || angle > ANGLE_INPUT_MAX)
+  {
+    return `angle must be between ${ANGLE_INPUT_MIN} and ${ANGLE_INPUT_MAX}`;
+  }
+
+  return;
 }
 
 function performSimulation(params) {
@@ -56,21 +80,31 @@ function validateRequest(req, res) {
     return res.status(401).json({'error': 'Jwt token is required'});
   }
 
-  if (!validateDeliveryParams(req.query)) {
-    return res.status(400).json({'error': 'Wrong params'});
+  let validationError = validateDeliveryParams(req.query['speed'], 
+                                               req.query['angle'], 
+                                               req.query['start_x']);
+  if (validationError) {
+    return res.status(400).json({'error': validationError});
   }
 
   // Authorization header format is: 'Bearer <token>'
   return authorization.split(' ')[1];
 }
 
+function normalizeSpeed(inputSpeed) {
+  const numberOfSteps = SPEED_INPUT_MAX - SPEED_INPUT_MIN;
+  const stepSize = (SPEED_OUTPUT_MAX - SPEED_OUTPUT_MIN) / numberOfSteps;
+  return SPEED_OUTPUT_MIN + (inputSpeed * (stepSize));
+}
+
 function getSimulationParams(game, deliveryParams) {
+  const speed = normalizeSpeed(deliveryParams.speed);
   return getStones(game.game_id)
     .then(stoneResponse => {
       let simulationParams = {
         delivery: {
           team: game.team,
-          speed: Number(deliveryParams.speed),
+          speed,
           angle: Number(deliveryParams.angle),
           start_x: Number(deliveryParams.start_x)
         },
