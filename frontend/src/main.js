@@ -1,13 +1,11 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import VueResource from 'vue-resource';
 
-import api from './api';
+Vue.use(VueResource);
+
+import App from './App.vue'
 
 new Vue({
   el: '#app',
   render: h => h(App)
 })
-
-// api usage:
-// api.getResults(4).then(game => { console.log(game); });
-// api.getActiveGames().then(games => { console.log(games); });
