@@ -36,7 +36,7 @@
         socket.emit('subscribe', { game_id });
       });
 
-      socket.on('new_delivery', function(data) {
+      socket.on('new_delivery', (data) => {
         const iceSurface = document.getElementById('ice-surface')
         const { delivery, stones } = data;
         renderSimulation(delivery, stones, sprites, background, iceSurface);
