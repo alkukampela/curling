@@ -41,13 +41,13 @@ function validateDeliveryParams(speed, angle, start_x) {
   }
 
   speed = Number(speed);
-  if (speed < SPEED_INPUT_MIN || speed > SPEED_INPUT_MAX)
+  if (R.either(R.lt(R.__, SPEED_INPUT_MIN), R.gt(R.__, SPEED_INPUT_MAX))(speed))
   {
     return `speed must be between ${SPEED_INPUT_MIN} and ${SPEED_INPUT_MAX}`;
   }
 
   angle = Number(angle);
-  if (angle < ANGLE_INPUT_MIN || angle > ANGLE_INPUT_MAX)
+  if (R.either(R.lt(R.__, ANGLE_INPUT_MIN), R.gt(R.__, ANGLE_INPUT_MAX))(angle))
   {
     return `angle must be between ${ANGLE_INPUT_MIN} and ${ANGLE_INPUT_MAX}`;
   }
@@ -92,9 +92,9 @@ function validateRequest(req, res) {
 }
 
 function normalizeSpeed(inputSpeed) {
-  const numberOfSteps = SPEED_INPUT_MAX - SPEED_INPUT_MIN;
-  const stepSize = (SPEED_OUTPUT_MAX - SPEED_OUTPUT_MIN) / numberOfSteps;
-  return SPEED_OUTPUT_MIN + (inputSpeed * (stepSize));
+  const numberOfSteps = R.subtract(SPEED_INPUT_MAX, SPEED_INPUT_MIN);
+  const stepSize = R.divide(R.subtract(SPEED_OUTPUT_MAX, SPEED_OUTPUT_MIN), numberOfSteps);
+  return R.add(SPEED_OUTPUT_MIN, R.multiply(inputSpeed, stepSize));
 }
 
 function getSimulationParams(game, deliveryParams) {
@@ -159,7 +159,6 @@ function saveDeliveryState(game, stone_locations) {
   }
   return storeState(game.game_id, stone_locations);
 }
-
 
 app.put('/*', function(req, res) {
   let jwt = validateRequest(req, res);
