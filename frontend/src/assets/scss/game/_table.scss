@@ -39,7 +39,7 @@ td {
   background: $cornflowerBlue;
   font-size: 1.5rem;
   color: $white;
-  @include text-shadow();
+  @include text-shadow-small();
 
   &.active {
     background-color: $blumine;
