@@ -183,6 +183,8 @@ def check_in_delivery(game_id):
 @app.route('/end_score/<game_id>', methods=['POST'])
 def save_end_score(game_id):
     end_score = request.get_json()
+    end_score.setdefault(RED_TEAM, 0)
+    end_score.setdefault(YELLOW_TEAM, 0)
 
     game = get_game_from_dataservice(game_id)
 
