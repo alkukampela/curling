@@ -17,10 +17,10 @@ def euclidean_distance(point1, point2):
     y1 = point1[1]
     x2 = point2[0]
     y2 = point2[1]
-    return math.sqrt((x1-y1)**2 + (x2-y2)**2)
+    return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 '''
-@:param stones: List of stones. One stone is in form {team: 1, x: 432, y: 343}
+@:param stones: List of stones. Stones are in form {team: "team_1", x: 432, y: 343}
 @:param house_radius: diameter of house in pixels
 @:param stone_radius: diameter of stones in pixels
 @:returns tuple: winning team, points or none if end was draw
@@ -42,7 +42,6 @@ def calculate_scores(stones, house_radius, stone_radius):
 
     stones = sorted(stones, key=lambda k: k[PROP_DISTANCE])
     closest_stone = stones[0]
-
     closest_team = closest_stone[PROP_TEAM]
 
     #Iterate through stones and count score
@@ -72,7 +71,6 @@ def calculate_end_score():
     if score:
         results[score[0]] = score[1]
 
-    print('End scores: '+ json.dumps(results))
     return Response(status=200,
                     response=json.dumps(results),
                     mimetype='application/json')
