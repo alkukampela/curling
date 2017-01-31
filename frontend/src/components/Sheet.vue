@@ -17,24 +17,6 @@
   }
   const background = 'dist/track_cropped.png'
 
-  // Parse game id from URL params
-  const params = new URLSearchParams(window.location.search.slice(1))
-  const game_id = params.get('game_id')
-
-  const socket = io.connect('ws://localhost:9999');
-
-  socket.on('connect', function() {
-    socket.emit('subscribe', { game_id });
-  });
-
-  socket.on('new_delivery', function(data) {
-    const iceSurface = document.getElementById('ice-surface')
-    const { delivery, stones } = data;
-    renderSimulation(delivery, stones, sprites, background, iceSurface);
-    //api.getResults(game_id).then(result => console.log(result));
-  });
-
-
   export default {
     props: ['activeGameId'],
     data () {
@@ -45,8 +27,19 @@
     methods: {
 
     },
-    components: {
+    mounted() {
+      const socket = io.connect('ws://localhost:9999');
 
+      socket.on('connect', function() {
+        socket.emit('subscribe', { game_id: this.activeGameId });
+      });
+
+      socket.on('new_delivery', function(data) {
+        const iceSurface = document.getElementById('ice-surface')
+        const { delivery, stones } = data;
+        renderSimulation(delivery, stones, sprites, background, iceSurface);
+        //api.getResults(game_id).then(result => console.log(result));
+      });
     }
   }
 </script>

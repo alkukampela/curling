@@ -11,9 +11,11 @@
   }
 
   li {
+    margin-top: 2em;
+
     a {
       cursor: pointer;
-      font-size: 2em;
+      font-size: 1.5em;
       color: $blumine;
 
        span {
