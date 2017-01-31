@@ -40,7 +40,8 @@
         const iceSurface = document.getElementById('ice-surface')
         const { delivery, stones } = data;
         renderSimulation(delivery, stones, sprites, background, iceSurface);
-        //api.getResults(game_id).then(result => console.log(result));
+
+        this.$emit('newDelivery', data);
       });
     }
   }
