@@ -30,8 +30,10 @@
     mounted() {
       const socket = io.connect('ws://localhost:9999');
 
+      let game_id = this.activeGameId;
+
       socket.on('connect', function() {
-        socket.emit('subscribe', { game_id: this.activeGameId });
+        socket.emit('subscribe', { game_id });
       });
 
       socket.on('new_delivery', function(data) {
