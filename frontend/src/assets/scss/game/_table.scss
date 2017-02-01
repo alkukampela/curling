@@ -31,7 +31,6 @@ th {
   &.played {
     color: $aquaIsland;
   }
-
 }
 
 td {
@@ -43,6 +42,9 @@ td {
 
   &.active {
     background-color: $blumine;
+    
+    div.hammer {
+      transform: rotate(45deg);
+    }
   }
-
 }
