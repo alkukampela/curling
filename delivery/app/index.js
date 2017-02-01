@@ -20,6 +20,8 @@ const SPEED_OUTPUT_MIN = 17;
 const SPEED_OUTPUT_MAX = 50;
 const ANGLE_INPUT_MIN = 0;
 const ANGLE_INPUT_MAX = 180;
+const CURL_INPUT_MAXABS = 10;
+const CURL_OUTPUT_MAXABS = 0.2;
 
 function getGame(jwtToken) {
   console.log('getGame', jwtToken);
@@ -34,9 +36,9 @@ function getStones(gameId) {
   return axios.get(stoneStore + gameId);
 }
 
-function validateDeliveryParams(speed, angle, start_x) {
-  if (R.any(isNaN)([speed, angle, start_x])) {
-    return "speed, angle and start_x must be numeric";
+function validateDeliveryParams(speed, angle, start_x, curl) {
+  if (R.any(isNaN)([speed, angle, start_x, curl])) {
+    return "speed, angle, start_x and curl must be numeric";
   }
 
   speed = Number(speed);
@@ -47,6 +49,11 @@ function validateDeliveryParams(speed, angle, start_x) {
   angle = Number(angle);
   if (R.either(R.lt(R.__, ANGLE_INPUT_MIN), R.gt(R.__, ANGLE_INPUT_MAX))(angle)) {
     return `angle must be between ${ANGLE_INPUT_MIN} and ${ANGLE_INPUT_MAX}`;
+  }
+
+  curl = Number(curl);
+  if (R.either(R.lt(R.__, R.negate(CURL_INPUT_MAXABS)), R.gt(R.__, CURL_INPUT_MAXABS))(curl)) {
+    return `curl must be between ${R.negate(CURL_INPUT_MAXABS)} and ${CURL_INPUT_MAXABS}`;
   }
 
   return;
@@ -79,7 +86,8 @@ function validateRequest(req, res) {
 
   let validationError = validateDeliveryParams(req.query['speed'], 
                                                req.query['angle'], 
-                                               req.query['start_x']);
+                                               req.query['start_x'],
+                                               req.query['curl']);
   if (validationError) {
     return res.status(400).json({'error': validationError});
   }
@@ -94,14 +102,21 @@ function normalizeSpeed(inputSpeed) {
   return R.add(SPEED_OUTPUT_MIN, R.multiply(inputSpeed, stepSize));
 }
 
+function normalizeCurl(inputCurl) {
+  const ratio = R.divide(CURL_INPUT_MAXABS, CURL_OUTPUT_MAXABS);
+  return R.divide(inputCurl, ratio);
+}
+
 function getSimulationParams(game, deliveryParams) {
   const speed = normalizeSpeed(deliveryParams.speed);
+  const curl = normalizeCurl(deliveryParams.curl);
   return getStones(game.game_id)
     .then(stoneResponse => {
       let simulationParams = {
         delivery: {
           team: game.team,
           speed,
+          curl,
           angle: Number(deliveryParams.angle),
           start_x: Number(deliveryParams.start_x)
         },

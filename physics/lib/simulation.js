@@ -47,9 +47,19 @@ const createStone = (x, y, angle, team, sprites) => {
 }
 
 const createStones = (delivery, stones, sprites) => {
-  const stationary = stones.map(s => createStone(s.x, s.y, s.angle, s.team, sprites))
+  const stationary = stones.map(s => createStone(s.x, 
+                                                 s.y, 
+                                                 s.angle, 
+                                                 s.team, 
+                                                 sprites))
 
-  const delivered = createStone(delivery.start_x, BOUNDS.max.y, 0, delivery.team, sprites)
+  const delivered = createStone(delivery.start_x, 
+                                BOUNDS.max.y, 
+                                0, 
+                                delivery.team, 
+                                sprites)
+                      
+  Body.setAngularVelocity(delivered, delivery.curl)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
 
   return [delivered, ...stationary]
@@ -126,7 +136,7 @@ const createRenderer = (engine, element, background) => {
 }
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     const isEmpty = e => !e.hasChildNodes()
     const removeChild = element => {
       element.removeChild(element.firstChild)
@@ -141,14 +151,14 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
 
     Events.on(renderer, 'afterRender', () => {
       if (isFinished(engine)) {
-        Render.stop(renderer);
-        resolve();
+        Render.stop(renderer)
+        resolve()
       }
     })
 
     Runner.run(runner, engine)
     Render.run(renderer)
-  });
+  })
 }
 
 export { simulate, renderSimulation, STONE_RADIUS, HOUSE_RADIUS }
