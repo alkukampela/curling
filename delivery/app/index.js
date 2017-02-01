@@ -35,20 +35,17 @@ function getStones(gameId) {
 }
 
 function validateDeliveryParams(speed, angle, start_x) {
-  if (R.any(isNaN)([speed, angle, start_x]))
-  {
+  if (R.any(isNaN)([speed, angle, start_x])) {
     return "speed, angle and start_x must be numeric";
   }
 
   speed = Number(speed);
-  if (R.either(R.lt(R.__, SPEED_INPUT_MIN), R.gt(R.__, SPEED_INPUT_MAX))(speed))
-  {
+  if (R.either(R.lt(R.__, SPEED_INPUT_MIN), R.gt(R.__, SPEED_INPUT_MAX))(speed)) {
     return `speed must be between ${SPEED_INPUT_MIN} and ${SPEED_INPUT_MAX}`;
   }
 
   angle = Number(angle);
-  if (R.either(R.lt(R.__, ANGLE_INPUT_MIN), R.gt(R.__, ANGLE_INPUT_MAX))(angle))
-  {
+  if (R.either(R.lt(R.__, ANGLE_INPUT_MIN), R.gt(R.__, ANGLE_INPUT_MAX))(angle)) {
     return `angle must be between ${ANGLE_INPUT_MIN} and ${ANGLE_INPUT_MAX}`;
   }
 
