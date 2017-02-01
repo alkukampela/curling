@@ -21,6 +21,17 @@ header {
   }
 }
 
+
+content {
+  #ice-surface
+  {
+    margin-top: 5px;
+    canvas {
+      border-bottom: 10px solid $white;
+    }
+  }
+}
+
 .clear {
   clear: both;
 }
