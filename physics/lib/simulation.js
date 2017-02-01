@@ -121,30 +121,34 @@ const createRenderer = (engine, element, background) => {
       wireframes: false
     }
   })
-  Events.on(renderer, 'afterRender', () => {
-    if (isFinished(engine)) {
-      Render.stop(renderer)
-    }
-  })
+
   return renderer
 }
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
+  return new Promise(function(resolve, reject) {
+    const isEmpty = e => !e.hasChildNodes()
+    const removeChild = element => {
+      element.removeChild(element.firstChild)
+      return element
+    }
+    R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
 
-  const isEmpty = e => !e.hasChildNodes()
-  const removeChild = element => {
-    element.removeChild(element.firstChild)
-    return element
-  }
-  R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
+    const matterStones = createStones(delivery, stones, sprites)
+    const engine = createEngine(matterStones)
+    const runner = createRunner()
+    const renderer = createRenderer(engine, element, background)
 
-  const matterStones = createStones(delivery, stones, sprites)
-  const engine = createEngine(matterStones)
-  const runner = createRunner()
-  const renderer = createRenderer(engine, element, background)
+    Events.on(renderer, 'afterRender', () => {
+      if (isFinished(engine)) {
+        Render.stop(renderer);
+        resolve();
+      }
+    })
 
-  Runner.run(runner, engine)
-  Render.run(renderer)
+    Runner.run(runner, engine)
+    Render.run(renderer)
+  });
 }
 
 export { simulate, renderSimulation, STONE_RADIUS, HOUSE_RADIUS }

@@ -39,9 +39,15 @@
       socket.on('new_delivery', (data) => {
         const iceSurface = document.getElementById('ice-surface')
         const { delivery, stones } = data;
-        renderSimulation(delivery, stones, sprites, background, iceSurface);
+        renderSimulation(delivery, stones, sprites, background, iceSurface)
+          .then((result) => {
+            this.$emit('newDelivery', data);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
 
-        this.$emit('newDelivery', data);
+
       });
     }
   }
