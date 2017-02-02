@@ -1,6 +1,28 @@
 version: '2'
 
 services:
+  proxy:
+    image: traefik:v1.1.2
+    ports:
+      - "80:80"
+    volumes:
+      - "./proxy/prod.toml:/etc/traefik/traefik.toml"
+
+  gateway:
+    image: traefik:v1.1.2
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./gateway/prod.toml:/etc/traefik/traefik.toml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.backend=gateway"
+
+  redis:
+    image: redis:2.8.19
+    ports:
+      - 6379:6379
+
   broadcaster:
     build:
       context: ./broadcaster
@@ -19,11 +41,6 @@ services:
       - "traefik.port=3721"
       - "traefik.backend=data-service"
 
-  redis:
-    image: redis:2.8.19
-    ports:
-      - 6379:6379
-
   delivery:
     build:
       context: ./delivery
@@ -33,16 +50,16 @@ services:
       - "traefik.backend=delivery"
 
   frontend:
-    build:
-      dockerfile: Dockerfile-dev
-      context: ./frontend
+    image: nginx:1.11.8-alpine
     ports:
-      - "8080:8080"
-    # volumes:
-    #   - "./frontend:/usr/share/nginx/html"
+      - "8080:80"
     volumes:
-      - "./frontend:/src/app"
-
+      - "./frontend/index.html:/usr/share/nginx/html/index.html"
+      - "./frontend/dist:/usr/share/nginx/html/dist"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/frontend"
+      - "traefik.port=80"
+      - "traefik.backend=frontend"
 
   gamemanager:
     build:
@@ -57,6 +74,7 @@ services:
   scores:
     build:
       context: ./scores
+      dockerfile: Dockerfile-dev
     environment:
      - PYTHONUNBUFFERED=0
     labels:
@@ -64,21 +82,10 @@ services:
       - "traefik.port=5000"
       - "traefik.backend=scores"
 
-
-  gateway:
-    image: traefik:v1.1.2
-    ports:
-      - "80:80"
-      - "8088:8088"
-    volumes:
-      - "./gateway/prod.toml:/etc/traefik/traefik.toml"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    labels:
-      - "traefik.backend=gateway"
-
   physics:
     build:
       context: ./physics
+      dockerfile: Dockerfile-dev
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/physics"
       - "traefik.port=3005"
@@ -86,6 +93,7 @@ services:
 
   results:
     build:
+      dockerfile: Dockerfile-dev
       context: ./results
     command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
     labels:
