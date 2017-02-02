@@ -10,8 +10,8 @@ ADD . /src/app
 
 WORKDIR /src/app
 
-ENV NODE_ENV production
+ENV NODE_ENV development
 
-EXPOSE 3000
+EXPOSE 3005
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

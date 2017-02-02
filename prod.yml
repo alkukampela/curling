@@ -23,15 +23,15 @@ services:
     ports:
       - 6379:6379
 
-  broadcaster:
-    build:
-      context: ./broadcaster
-    ports:
-      - 9999:5000
-    labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
-      - "traefik.port=5000"
-      - "traefik.backend=broadcaster"
+  # broadcaster:
+  #   build:
+  #     context: ./broadcaster
+  #   ports:
+  #     - 9999:5000
+  #   labels:
+  #     - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
+  #     - "traefik.port=5000"
+  #     - "traefik.backend=broadcaster"
 
   data-service:
     build:
@@ -61,42 +61,39 @@ services:
       - "traefik.port=80"
       - "traefik.backend=frontend"
 
-  gamemanager:
-    build:
-      context: ./gamemanager
-    environment:
-     - PYTHONUNBUFFERED=0
-    labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
-      - "traefik.port=5000"
-      - "traefik.backend=gamemanager"
-
-  scores:
-    build:
-      context: ./scores
-      dockerfile: Dockerfile-dev
-    environment:
-     - PYTHONUNBUFFERED=0
-    labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/scores"
-      - "traefik.port=5000"
-      - "traefik.backend=scores"
+  # gamemanager:
+  #   build:
+  #     context: ./gamemanager
+  #   environment:
+  #    - PYTHONUNBUFFERED=0
+  #   labels:
+  #     - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
+  #     - "traefik.port=5000"
+  #     - "traefik.backend=gamemanager"
+  #
+  # scores:
+  #   build:
+  #     context: ./scores
+  #   environment:
+  #    - PYTHONUNBUFFERED=0
+  #   labels:
+  #     - "traefik.frontend.rule=PathPrefixStrip:/scores"
+  #     - "traefik.port=5000"
+  #     - "traefik.backend=scores"
 
   physics:
     build:
       context: ./physics
-      dockerfile: Dockerfile-dev
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/physics"
       - "traefik.port=3005"
       - "traefik.backend=physics"
 
-  results:
-    build:
-      dockerfile: Dockerfile-dev
-      context: ./results
-    command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
-    labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/results"
-      - "traefik.port=5000"
-      - "traefik.backend=results"
+  # results:
+  #   build:
+  #     context: ./results
+  #   command: bash -c "cd /app && dotnet restore && dotnet watch run --server.urls http://*:5000"
+  #   labels:
+  #     - "traefik.frontend.rule=PathPrefixStrip:/results"
+  #     - "traefik.port=5000"
+  #     - "traefik.backend=results"
