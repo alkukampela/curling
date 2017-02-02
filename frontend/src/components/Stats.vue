@@ -15,6 +15,7 @@
           <!-- <td class="team_1">3</td> -->
           <td v-for="n in maxEndCount" v-bind:class="{ active: activeEnd === n, team_1: isEndWinner(n, 'team_1')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_1 }}</span>
+            <div v-else-if="n === activeEnd && hasHammer('team_1')" class="hammer">T</dov>
           </td>
         </tr>
         <tr>
@@ -22,6 +23,7 @@
           <td class="active"></td> -->
           <td v-for="n in maxEndCount"  v-bind:class="{ active: activeEnd === n, team_2: isEndWinner(n, 'team_2')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_2 }}</span>
+            <div v-else-if="n === activeEnd && hasHammer('team_2')" class="hammer">T</div>
           </td>
         </tr>
       </tbody>
@@ -73,6 +75,9 @@ export default {
       }
 
       return teamName === R.head(this.sortEndScore(endScore))[0];
+    },
+    hasHammer(teamName){
+      return teamName === this.activeGame.team_with_hammer;
     }
   }
 }

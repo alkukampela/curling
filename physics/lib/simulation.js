@@ -137,6 +137,8 @@ const createRenderer = (engine, element, background) => {
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
   return new Promise((resolve, reject) => {
+    let t;
+    
     const isEmpty = e => !e.hasChildNodes()
     const removeChild = element => {
       element.removeChild(element.firstChild)
@@ -149,10 +151,13 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
     const runner = createRunner()
     const renderer = createRenderer(engine, element, background)
 
+    t = setTimeout(reject, 12000);
+
     Events.on(renderer, 'afterRender', () => {
       if (isFinished(engine)) {
-        Render.stop(renderer)
-        resolve()
+        Render.stop(renderer);
+        clearTimeout(t);
+        resolve();
       }
     })
 
