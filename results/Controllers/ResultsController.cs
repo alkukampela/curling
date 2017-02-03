@@ -1,26 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net;
 using Results.Models;
 using Jil;
-using Jil.DeserializeDynamic;
 
 namespace Results.Controllers
 {
     [Route("")]
     public class ResultsController : Controller
     {
-        private const string BASE_URL = "http://gateway:8888";
-        
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var games = await this.FetchGames();
-            return GetJsonResult(games);
+            return Helpers.GetJsonResult(games);
         }
 
         [HttpGet("{gameId}")]
@@ -29,7 +25,7 @@ namespace Results.Controllers
             try
             {
                 var game = await this.FetchGame(gameId);
-                return GetJsonResult(game);
+                return Helpers.GetJsonResult(game);
             }
             catch (ArgumentException)
             {
@@ -95,17 +91,8 @@ namespace Results.Controllers
 
         private async Task<HttpResponseMessage> DoRequest(HttpClient client, string endpoint) 
         {
-            client.BaseAddress = new Uri(BASE_URL);
+            client.BaseAddress = new Uri(Constants.BASE_URL);
             return await client.GetAsync(endpoint);
-        }
-
-
-        private static ContentResult GetJsonResult(object value)
-        {
-            return new ContentResult {
-                Content = JSON.Serialize(value),
-                ContentType = "application/json"
-            };
         }
     }
 }

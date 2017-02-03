@@ -21,7 +21,7 @@ defaultEntryPoints = ["http"]
     backend = "gateway"
     passHostHeader = true
       [frontends.gateway.routes.test_1]
-        rule = "Path: /delivery, /gamemanager/begin_game, /gamemanager/join_game, /results, /results/{game_id}"
+        rule = "Path: /delivery, /gamemanager/begin_game, /gamemanager/join_game, /results, /results/{game_id}, /results/stones/{game_id}"
   [frontends.frontend]
     backend = "frontend"
     passHostHeader = true

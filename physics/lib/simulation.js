@@ -46,13 +46,16 @@ const createStone = (x, y, angle, team, sprites) => {
   return stone
 }
 
-const createStones = (delivery, stones, sprites) => {
-  const stationary = stones.map(s => createStone(s.x, 
-                                                 s.y, 
-                                                 s.angle, 
-                                                 s.team, 
-                                                 sprites))
+const createStationaryStones = (stones, sprites) => {
+  return stones.map(s => createStone(s.x, 
+                                     s.y, 
+                                     s.angle, 
+                                     s.team, 
+                                     sprites))
+}
 
+const createStones = (delivery, stones, sprites) => {
+  const stationary = createStationaryStones(stones, sprites)
   const delivered = createStone(delivery.start_x, 
                                 BOUNDS.max.y, 
                                 0, 
@@ -135,16 +138,20 @@ const createRenderer = (engine, element, background) => {
   return renderer
 }
 
-const renderSimulation = (delivery, stones, sprites, background, element) => {
-  return new Promise((resolve, reject) => {
-    let t;
-    
+const removeElementsChildren = (element) => {
     const isEmpty = e => !e.hasChildNodes()
     const removeChild = element => {
       element.removeChild(element.firstChild)
       return element
     }
     R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
+}
+
+const renderSimulation = (delivery, stones, sprites, background, element) => {
+  return new Promise((resolve, reject) => {
+    let t;
+    
+    removeElementsChildren(element)
 
     const matterStones = createStones(delivery, stones, sprites)
     const engine = createEngine(matterStones)
@@ -166,4 +173,15 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
   })
 }
 
-export { simulate, renderSimulation, STONE_RADIUS, HOUSE_RADIUS }
+const renderStationary = (stones, sprites, background, element) => {
+    removeElementsChildren(element)
+
+    const matterStones = createStationaryStones(stones, sprites)
+    const engine = createEngine(matterStones)
+    const renderer = createRenderer(engine, element, background)
+
+    //Runner.run(runner, engine)
+    Render.run(renderer)
+}
+
+export { simulate, renderSimulation, renderStationary, STONE_RADIUS, HOUSE_RADIUS }
