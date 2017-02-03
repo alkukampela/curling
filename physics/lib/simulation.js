@@ -28,7 +28,7 @@ const getVelocity = (speed, angle) => {
   return Vector.create(vx, vy)
 }
 
-const createStone = (x, y, angle, team, sprites) => {
+const createStone = (x, y, angle, team, sprites, isDelivery) => {
   const options = {
     frictionAir: FRICTION,
     restitution: RESTITUTION,
@@ -43,6 +43,7 @@ const createStone = (x, y, angle, team, sprites) => {
   }
   const stone = Bodies.circle(x, y, STONE_RADIUS, options)
   stone.team = team
+  stone.isDelivery = isDelivery
   return stone
 }
 
@@ -51,13 +52,15 @@ const createStones = (delivery, stones, sprites) => {
                                                  s.y, 
                                                  s.angle, 
                                                  s.team, 
-                                                 sprites))
+                                                 sprites,
+                                                 false))
 
   const delivered = createStone(delivery.start_x, 
                                 BOUNDS.max.y, 
                                 0, 
                                 delivery.team, 
-                                sprites)
+                                sprites,
+                                true)
                       
   Body.setAngularVelocity(delivered, delivery.curl)
   Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
@@ -71,6 +74,7 @@ const createEngine = matterStones => {
 
   World.add(engine.world, matterStones)
   Events.on(engine, 'afterUpdate', () => {
+    applyCurl(engine)
     // Remove items that are out of bounds
     engine.world.bodies
       .filter(isOutOfBounds)
@@ -94,6 +98,22 @@ const isMoving = stone => Vector.magnitude(stone.velocity) > MIN_SPEED
 const isFinished = engine => (
   engine.world.bodies.length === 0 || !engine.world.bodies.some(isMoving)
 )
+
+
+const applyCurl  = engine => {
+  const deliveryStone = engine.world.bodies.find(x => x.isDelivery === true)
+  if (!deliveryStone)
+  {
+    return
+  }
+
+  const baseVector = deliveryStone.velocity;
+  const scaledVector = Vector.mult(baseVector, Math.abs(deliveryStone.angularVelocity) / 4500)
+  const angle = Math.sign(deliveryStone.angularVelocity) * 0.5 * Math.PI
+  const directedVector = Vector.rotate(scaledVector, angle)
+
+  Body.applyForce(deliveryStone, deliveryStone.position, directedVector)
+}
 
 const simulate = (delivery, stones) => {
   const matterStones = createStones(delivery, stones)
@@ -137,7 +157,7 @@ const createRenderer = (engine, element, background) => {
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
   return new Promise((resolve, reject) => {
-    let t;
+    let failTimeout;
     
     const isEmpty = e => !e.hasChildNodes()
     const removeChild = element => {
@@ -151,12 +171,13 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
     const runner = createRunner()
     const renderer = createRenderer(engine, element, background)
 
-    t = setTimeout(reject, 12000);
+    failTimeout = setTimeout(reject, 12000);
 
     Events.on(renderer, 'afterRender', () => {
+      
       if (isFinished(engine)) {
         Render.stop(renderer);
-        clearTimeout(t);
+        clearTimeout(failTimeout);
         resolve();
       }
     })
