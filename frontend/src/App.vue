@@ -11,10 +11,10 @@
 
   export default {
     name: 'app',
-    data () {
+    data() {
       return {
         activeGame: null
-      }
+      };
     },
     methods: {
       setGame(gameId){

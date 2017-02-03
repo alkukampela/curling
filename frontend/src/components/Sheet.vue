@@ -19,17 +19,14 @@
 
   export default {
     props: ['activeGameId'],
-    data () {
-      return {
-
-      }
+    data() {
+      return {};
     },
     methods: {
 
     },
     mounted() {
       const socket = io.connect('ws://localhost:9999');
-
       let game_id = this.activeGameId;
 
       socket.on('connect', function() {
@@ -46,8 +43,6 @@
           .catch((err) => {
             console.error(err);
           });
-
-
       });
     }
   }

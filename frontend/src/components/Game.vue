@@ -31,29 +31,15 @@ import Stats from './Stats.vue';
 
 export default {
   props: ['activeGameId'],
-  data () {
+  data() {
     return {
-      maxEndCount: 10,
       activeGame: {
-        "stones_in_end": 0,
-        "total_ends": 0,
-        "teams": {
-          "team_1": "",
-          "team_2": ""
-        },
-        "stones_delivered": {
-          "team_1": 0,
-          "team_2": 0
-        },
+        "teams": {},
+        "stones_delivered": {},
         "end_scores": [],
-        "total_score": {
-          "team_1": 0,
-          "team_2": 0
-        },
-        "team_with_hammer": "",
-        "delivery_turn": ""
+        "total_score": {}
       }
-    }
+    };
   },
   methods: {
     getGame(gameId) {

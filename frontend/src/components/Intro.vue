@@ -11,10 +11,8 @@
 
   export default {
     props: ['activeGame'],
-    data () {
-      return {
-
-      }
+    data() {
+      return {};
     },
     methods: {
       setGame(gameId){

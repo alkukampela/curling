@@ -30,10 +30,10 @@
     created() {
       this.updateGames();
     },
-    data () {
+    data() {
       return {
         games: []
-      }
+      };
     }
   }
 </script>

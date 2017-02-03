@@ -14,10 +14,8 @@
 <script>
   export default {
     props: ['slug', 'name', 'stoneCount', 'deliveredCount'],
-    data () {
-      return {
-
-      }
+    data() {
+      return {};
     },
     methods: {
       isDeliveryActive(count) {
