@@ -18,7 +18,7 @@ const BOUNDS = {
   min: { x: -SHEET_WIDTH / 2, y: -BUTTON_Y },
   max: { x: SHEET_WIDTH / 2, y: SHEET_HEIGHT - BUTTON_Y }
 }
-const MIN_SPEED = 0.01
+const MIN_SPEED = 0.02
 const SIMULATION_STEP_MS = 1000 / 60
 
 // FIXME rename angle to line, speed to weight
@@ -55,7 +55,7 @@ const createStones = (delivery, stones, sprites) => {
                                                  sprites,
                                                  false))
 
-  const delivered = createStone(delivery.start_x, 
+  const delivered = createStone(0, 
                                 BOUNDS.max.y, 
                                 0, 
                                 delivery.team, 
@@ -101,18 +101,19 @@ const isFinished = engine => (
 
 
 const applyCurl  = engine => {
-  const deliveryStone = engine.world.bodies.find(x => x.isDelivery === true)
-  if (!deliveryStone)
-  {
+  const deliveree = engine.world.bodies.find(x => x.isDelivery === true)
+  if (!deliveree || deliveree.speed < MIN_SPEED){
     return
   }
+  const baseVector = deliveree.velocity;
+  // Base scaling is based on the amount of curl in the stone
+  let scaledVector = Vector.mult(baseVector, Math.abs(deliveree.angularVelocity) / 2000)
+  // Add some bonus scaling that increments towards the end
+  scaledVector = Vector.mult(scaledVector, Math.log(1/deliveree.speed + Math.E))
+  const directionAngle = Math.sign(deliveree.angularVelocity) * 0.5 * Math.PI
+  const directedVector = Vector.rotate(scaledVector, directionAngle)
 
-  const baseVector = deliveryStone.velocity;
-  const scaledVector = Vector.mult(baseVector, Math.abs(deliveryStone.angularVelocity) / 4500)
-  const angle = Math.sign(deliveryStone.angularVelocity) * 0.5 * Math.PI
-  const directedVector = Vector.rotate(scaledVector, angle)
-
-  Body.applyForce(deliveryStone, deliveryStone.position, directedVector)
+  Body.applyForce(deliveree, deliveree.position, directedVector)
 }
 
 const simulate = (delivery, stones) => {
