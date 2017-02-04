@@ -22,9 +22,6 @@
     data() {
       return {};
     },
-    methods: {
-
-    },
     mounted() {
       const socket = io.connect('ws://localhost:9999');
       let game_id = this.activeGameId;
