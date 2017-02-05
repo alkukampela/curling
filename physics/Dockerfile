@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:7.3.0
+FROM node:7.5.0-alpine
 
 RUN mkdir /src
 
@@ -10,8 +10,8 @@ ADD . /src/app
 
 WORKDIR /src/app
 
-ENV NODE_ENV development
+ENV NODE_ENV production
 
 EXPOSE 3005
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]

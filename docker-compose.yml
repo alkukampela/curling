@@ -51,6 +51,7 @@ services:
 
   delivery:
     build:
+      dockerfile: Dockerfile-dev
       context: ./delivery
     volumes:
       - "./delivery:/src/app"
@@ -100,8 +101,8 @@ services:
 
   physics:
     build:
-      context: ./physics
       dockerfile: Dockerfile-dev
+      context: ./physics
     volumes:
       - "./physics:/src/app"
     labels:

@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:7.3.0
+FROM node:7.5.0-alpine
 
 RUN mkdir /src
 
