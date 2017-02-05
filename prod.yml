@@ -61,15 +61,15 @@ services:
       - "traefik.port=80"
       - "traefik.backend=frontend"
 
-  gamemanager:
+  games:
     build:
       context: ./gamemanager
     environment:
      - SITE_BASE_URL=https://curling.goforecrew.com
     labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
+      - "traefik.frontend.rule=PathPrefixStrip:/games"
       - "traefik.port=5000"
-      - "traefik.backend=gamemanager"
+      - "traefik.backend=games"
 
   scores:
     build:

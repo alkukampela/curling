@@ -24,12 +24,12 @@ npm run dev
 3. docker-compose up
 4. Register first team:
 
-    POST http://localhost/gamemanager/begin_game?team=Ykkösjengi
+    POST http://localhost/games/begin_game?team=Ykkösjengi
 
     Don't lose the reply, it contains valuable information!
 5. Register second team:
 
-    POST http://localhost/gamemanager/join_game?team=Kakkosjengi
+    POST http://localhost/games/join_game?team=Kakkosjengi
 
     This has also very important reply!
 6. Go to page linked in team registering reply
