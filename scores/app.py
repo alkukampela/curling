@@ -1,5 +1,6 @@
 import json
 import math
+import os
 from flask import Flask, request, Response
 
 app = Flask(__name__)
@@ -77,4 +78,5 @@ def calculate_end_score():
                     mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    DEBUGMODE = bool(os.getenv('DEBUGMODE'))
+    app.run(host='0.0.0.0', debug=DEBUGMODE)

@@ -27,11 +27,12 @@ services:
   broadcaster:
     build:
       context: ./broadcaster
-      dockerfile: Dockerfile-dev
     ports:
       - 9999:5000
     volumes:
       - "./broadcaster:/code"
+    environment:
+     - DEBUGMODE=debug
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
       - "traefik.port=5000"
@@ -73,11 +74,12 @@ services:
   gamemanager:
     build:
       context: ./gamemanager
-      dockerfile: Dockerfile-dev
     volumes:
       - "./gamemanager:/code"
     environment:
      - PYTHONUNBUFFERED=0
+     - SITE_BASE_URL=http://localhost
+     - DEBUGMODE=debug
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/gamemanager"
       - "traefik.port=5000"
@@ -86,11 +88,11 @@ services:
   scores:
     build:
       context: ./scores
-      dockerfile: Dockerfile-dev
     volumes:
       - "./scores:/code"
     environment:
      - PYTHONUNBUFFERED=0
+     - DEBUGMODE=debug
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/scores"
       - "traefik.port=5000"

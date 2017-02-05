@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3.6.0-alpine
 
 RUN mkdir /code
 

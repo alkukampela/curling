@@ -1,6 +1,7 @@
 import json
 import uuid
 import random
+import os
 
 import requests
 from flask import Flask, request, Response
@@ -11,12 +12,15 @@ app = Flask(__name__)
 
 SECRET = 'L1hamugi'
 ID_LENGTH = 7
+
+SITE_BASE_URL = os.getenv('SITE_BASE_URL')
+DELIVERY_URL = SITE_BASE_URL+'/delivery'
+GAME_URL = SITE_BASE_URL+'?game_id='
+
 DATASERVICE_URL = 'http://gateway:8888/data-service/'
-DELIVERY_URL = 'http://localhost/delivery'
-GAME_URL = 'http://localhost?game_id='
-GAMES_ENDPOINT = 'games/'
-NEW_GAME_INIT = 'newgame/init'
-NEW_GAME_JOIN = 'newgame/join'
+GAMES_ENDPOINT = DATASERVICE_URL+'games/'
+NEW_GAME_INIT = DATASERVICE_URL+'newgame/init'
+NEW_GAME_JOIN = DATASERVICE_URL+'newgame/join'
 
 RED_TEAM = 'team_1'
 YELLOW_TEAM = 'team_2'
@@ -74,7 +78,7 @@ def begin_game():
         PROP_STONES_IN_END: stones_in_end
     }
     
-    response = requests.post(f'{DATASERVICE_URL}{NEW_GAME_INIT}', json = new_game)
+    response = requests.post(f'{NEW_GAME_INIT}', json = new_game)
     if (response.status_code != 201):
         return Response(status=500,
                         response='Error during game initialization.\n')
@@ -105,7 +109,7 @@ def join_game():
         return Response(status=400,
                         response='Error: Team name cannot be empty.\n')
 
-    new_game = requests.post(f'{DATASERVICE_URL}{NEW_GAME_JOIN}').json()
+    new_game = requests.post(f'{NEW_GAME_JOIN}').json()
 
     if not new_game:
         return Response(status=400,
@@ -265,14 +269,14 @@ def generate_new_id():
     return uuid.uuid4().hex[0:ID_LENGTH]
 
 def get_game_from_dataservice(game_id):
-    response = requests.get(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}')
+    response = requests.get(f'{GAMES_ENDPOINT}{game_id}')
     return response.json()
 
 def create_game_in_dataservice(game_id, game):
-    response = requests.post(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
+    response = requests.post(f'{GAMES_ENDPOINT}{game_id}', json = game)
 
 def update_game_in_dataservice(game_id, game):
-    response = requests.put(f'{DATASERVICE_URL}{GAMES_ENDPOINT}{game_id}', json = game)
+    response = requests.put(f'{GAMES_ENDPOINT}{game_id}', json = game)
 
 def draw_a_team():
     return YELLOW_TEAM if random.randint(0, 1) else RED_TEAM
@@ -322,4 +326,5 @@ To watch the game, go to {GAME_URL}{game_id}
 '''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    DEBUGMODE = bool(os.getenv('DEBUGMODE'))
+    app.run(host='0.0.0.0', debug=DEBUGMODE)
