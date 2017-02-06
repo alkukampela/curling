@@ -1,4 +1,4 @@
-import json
+import os
 
 from flask import Flask, request, Response
 from flask_socketio import SocketIO, join_room
@@ -17,4 +17,5 @@ def on_subscribe(message):
     join_room(game_id)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', debug=True)
+    DEBUGMODE = bool(os.getenv('DEBUGMODE'))
+    socketio.run(app, host='0.0.0.0', debug=DEBUGMODE)

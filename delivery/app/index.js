@@ -9,7 +9,7 @@ app.use(morgan('combined'));
 
 const gateway = 'http://gateway:8888'
 const broadcaster = gateway + '/broadcaster/publish/';
-const gameManager = gateway + '/gamemanager/';
+const gameManager = gateway + '/games/';
 const stoneStore = gateway + '/data-service/stones/';
 const scoreCalculator = gateway + '/scores/';
 const simulator = gateway + '/physics/';
@@ -21,7 +21,7 @@ const SPEED_OUTPUT_MAX = 50;
 const ANGLE_INPUT_MIN = 0;
 const ANGLE_INPUT_MAX = 180;
 const CURL_INPUT_MAXABS = 10;
-const CURL_OUTPUT_MAXABS = 0.2;
+const CURL_OUTPUT_MAXABS = 0.25;
 
 function getGame(jwtToken) {
   console.log('getGame', jwtToken);
@@ -36,9 +36,9 @@ function getStones(gameId) {
   return axios.get(stoneStore + gameId);
 }
 
-function validateDeliveryParams(speed, angle, start_x, curl) {
-  if (R.any(isNaN)([speed, angle, start_x, curl])) {
-    return "speed, angle, start_x and curl must be numeric";
+function validateDeliveryParams(speed, angle, curl) {
+  if (R.any(isNaN)([speed, angle, curl])) {
+    return "speed, angle and curl must be numeric";
   }
 
   speed = Number(speed);
@@ -86,7 +86,6 @@ function validateRequest(req, res) {
 
   let validationError = validateDeliveryParams(req.query['speed'], 
                                                req.query['angle'], 
-                                               req.query['start_x'],
                                                req.query['curl']);
   if (validationError) {
     return res.status(400).json({'error': validationError});
@@ -117,8 +116,7 @@ function getSimulationParams(game, deliveryParams) {
           team: game.team,
           speed,
           curl,
-          angle: Number(deliveryParams.angle),
-          start_x: Number(deliveryParams.start_x)
+          angle: Number(deliveryParams.angle)
         },
         // TODO: this should not be necessary, stone response should always be array
         stones: R.isEmpty(stoneResponse.data) ? [] : stoneResponse.data

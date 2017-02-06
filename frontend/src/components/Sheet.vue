@@ -22,9 +22,6 @@
     data() {
       return {};
     },
-    methods: {
-
-    },
     mounted() {
       const iceSurface = document.getElementById('ice-surface')
       let game_id = this.activeGameId;

@@ -1,0 +1,17 @@
+---
+- hosts: curling
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+    - Bessonov.docker
+    - Bessonov.docker-compose
+
+  post_tasks:
+    - name: 'fetch source code'
+      git:
+        repo: https://github.com/alkukampela/curling.git
+        dest: /home/ubuntu/curling
+
+    - name: 'start containers'
+      command: docker-compose -f /home/ubuntu/curling/prod.yml up -d --build

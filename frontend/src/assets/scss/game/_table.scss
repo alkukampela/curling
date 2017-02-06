@@ -23,6 +23,7 @@ th {
   background: $bostonBlue;
   color: $blumine;
   font-size: 1.2rem;
+  font-weight: normal;
 
   &.active {
     color: $white;
@@ -36,7 +37,7 @@ th {
 td {
   padding: 0.5rem 0;
   background: $cornflowerBlue;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: $white;
   @include text-shadow-small();
 
