@@ -4,7 +4,7 @@
 </template>
 
 <script>
-  import { renderSimulation } from 'curling-physics/lib/simulation'
+  import { renderSimulation, renderStationary } from 'curling-physics/lib/simulation'
 
   import redStone from '../assets/stone_red_game.png'
   import yellowStone from '../assets/stone_yellow_game.png'
@@ -23,15 +23,23 @@
       return {};
     },
     mounted() {
-      const socket = io.connect('ws://localhost:9999');
+      const iceSurface = document.getElementById('ice-surface')
       let game_id = this.activeGameId;
 
+      this.$http.get('http://localhost/results/stones/' + game_id).then(response => {
+        renderStationary(response.body, sprites, background, iceSurface)
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
+      const socket = io.connect('ws://localhost:9999');
+      
       socket.on('connect', function() {
         socket.emit('subscribe', { game_id });
       });
 
       socket.on('new_delivery', (data) => {
-        const iceSurface = document.getElementById('ice-surface')
         const { delivery, stones } = data;
         renderSimulation(delivery, stones, sprites, background, iceSurface)
           .then((result) => {
