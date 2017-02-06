@@ -319,7 +319,7 @@ def get_team_instructions(team):
 def get_delivery_instructions(jwt_token, game_id):
     return f'''    
 Usage (replace zeroes with suitable values):
-curl -X PUT -H "Authorization: Bearer {jwt_token}" "{DELIVERY_URL}?speed=0&angle=0&start_x=0&curl=0"
+curl -X PUT -H "Authorization: Bearer {jwt_token}" "{DELIVERY_URL}?speed=0&angle=0&curl=0"
 
 To watch the game, go to {GAME_URL}{game_id}
 
