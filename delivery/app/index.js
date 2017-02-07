@@ -36,6 +36,10 @@ function getStones(gameId) {
   return axios.get(stoneStore + gameId);
 }
 
+function userAgentIsValid(req) {
+  return req.headers['user-agent'].startsWith('curl') ? true : false;
+}
+
 function validateDeliveryParams(speed, angle, curl) {
   if (R.any(isNaN)([speed, angle, curl])) {
     return "speed, angle and curl must be numeric";
@@ -78,6 +82,10 @@ function makeDelivery(gameId, params) {
 }
 
 function validateRequest(req, res) {
+  if (!userAgentIsValid(req)) {
+    return res.status(406).json({'error': 'Use cUrl please. (Or at least bother to fake it)'});
+  }
+
   let authorization = req.headers.authorization;
 
   if (!authorization) {
