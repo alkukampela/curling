@@ -1,18 +1,9 @@
-FROM mhart/alpine-node:7.3.0
+FROM node:7.5.0-alpine
 
-# WORKDIR /src
+COPY package.json /src/app/package.json
+RUN cd /src/app && npm install
 
-RUN npm install webpack-dev-server -g
-RUN npm install cross-env -g
-RUN npm install webpack -g
-
-ADD package.json /src/package.json
-
-WORKDIR /src
-
-RUN npm install
-
-ADD . /src/app
+COPY . /src/app
 
 WORKDIR /src/app
 

@@ -61,12 +61,15 @@ services:
       - "traefik.backend=delivery"
 
   frontend:
-    image: nginx:1.11.8-alpine
+    build:
+      dockerfile: Dockerfile-dev
+      context: ./frontend
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
-      - "./frontend/index.html:/usr/share/nginx/html/index.html"
-      - "./frontend/dist:/usr/share/nginx/html/dist"
+      - ./frontend:/src/app
+      - /src/app/node_modules
+      - ./physics:/src/physics
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/frontend"
       - "traefik.port=80"
