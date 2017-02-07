@@ -1,6 +1,8 @@
 var path = require('path')
 var webpack = require('webpack')
 
+var broadcasterHost = process.env.BROADCASTER_HOST || 'ws://localhost:9999';
+
 module.exports = {
   entry: {
     main: './src/main.js'
@@ -24,6 +26,15 @@ module.exports = {
             'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
           }
           // other vue-loader options go here
+        }
+      },
+      {
+        test: /\.vue$/,
+        loader: 'string-replace-loader',
+        query: {
+          multiple: [
+             { search: '**broadcasterHost**', replace: broadcasterHost }
+          ]
         }
       },
       {
