@@ -14,7 +14,7 @@ defaultEntryPoints = ["http"]
     url = "http://gateway:8888"
   [backends.frontend]
     [backends.frontend.servers.server1]
-      url = "http://frontend"
+      url = "http://frontend:8080"
 
 [frontends]
   [frontends.gateway]
@@ -29,4 +29,4 @@ defaultEntryPoints = ["http"]
         rule = "Path: /"
 
 
-# https://docs.traefik.io/basics/#frontends        
+# https://docs.traefik.io/basics/#frontends
