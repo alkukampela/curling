@@ -33,8 +33,8 @@
         console.error(err);
       });
 
-      const socket = io.connect('ws://localhost:9999');
-      
+      const socket = io.connect('http://localhost', { path: '/heikin-saapas'});
+
       socket.on('connect', function() {
         socket.emit('subscribe', { game_id });
       });

@@ -3,7 +3,7 @@ logLevel = "DEBUG"
 defaultEntryPoints = ["http"]
 [entryPoints]
   [entryPoints.http]
-  address = ":80"
+    address = ":80"
 
 [file]
   watch = true
@@ -11,10 +11,13 @@ defaultEntryPoints = ["http"]
 [backends]
   [backends.gateway]
     [backends.gateway.servers.server1]
-    url = "http://gateway:8888"
+      url = "http://gateway:8888"
   [backends.frontend]
     [backends.frontend.servers.server1]
       url = "http://frontend:8080"
+  [backends.broadcaster]
+    [backends.broadcaster.servers.server1]
+      url = "http://localhost:9999"
 
 [frontends]
   [frontends.gateway]
@@ -27,6 +30,11 @@ defaultEntryPoints = ["http"]
     passHostHeader = true
       [frontenda.frontends.routes.test_1]
         rule = "Path: /"
+  [frontends.broadcaster]
+    backend = "broadcaster"
+    passHostHeader = true
+      [frontends.broadcaster.routes.test_1]
+        rule = "Path: /heikin-saapas"
 
 
 # https://docs.traefik.io/basics/#frontends

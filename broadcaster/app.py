@@ -4,7 +4,7 @@ from flask import Flask, request, Response
 from flask_socketio import SocketIO, join_room
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, path='/heikin-saapas')
 
 @app.route('/publish/<game_id>', methods=['POST'])
 def publish(game_id):
