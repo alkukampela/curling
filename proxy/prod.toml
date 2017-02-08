@@ -36,4 +36,4 @@ defaultEntryPoints = ["http", "https"]
       [frontends.gateway.routes.test_1]
         rule = "Host: curling.goforecrew.com"
       [frontends.gateway.routes.test_2]
-        rule = "Path: /delivery, /games/begin_game, /games/join_game, /results, /results/{game_id}"
+        rule = "Path: /delivery, /games/begin, /games/join, /results, /results/{game_id}, /results/stones/{game_id}"

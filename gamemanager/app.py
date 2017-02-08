@@ -43,7 +43,7 @@ PROP_TEAM_NAME = 'team_name'
 PROP_DRAWN_TEAM = 'drawn_team'
 
 
-@app.route('/begin_game', methods=['POST'])
+@app.route('/begin', methods=['POST'])
 def begin_game():
     parser = reqparse.RequestParser()
     parser.add_argument('team', help='Name of your team')
@@ -97,7 +97,7 @@ def begin_game():
                     mimetype='text/plain')
 
 
-@app.route('/join_game', methods=['POST'])
+@app.route('/join', methods=['POST'])
 def join_game():
     parser = reqparse.RequestParser()
     parser.add_argument('team', help='Name of your team')
