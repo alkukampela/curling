@@ -5,12 +5,12 @@
 1. Run ```bash build.sh```
 1. Register first team:
 
-    POST http://localhost/games/begin_game?team=Ykkösjengi
+    POST http://localhost/games/begin?team=Ykkösjengi
 
     Don't lose the reply, it contains valuable information!
 1. Register second team:
 
-    POST http://localhost/games/join_game?team=Kakkosjengi
+    POST http://localhost/games/join?team=Kakkosjengi
 
     This has also very important reply!
 1. Go to page linked in team registering reply
