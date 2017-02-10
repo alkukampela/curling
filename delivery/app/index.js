@@ -14,12 +14,12 @@ const stoneStore = gateway + '/data-service/stones/';
 const scoreCalculator = gateway + '/scores/';
 const simulator = gateway + '/physics/';
 
-const SPEED_INPUT_MIN = 0;
-const SPEED_INPUT_MAX = 10;
-const SPEED_OUTPUT_MIN = 17;
-const SPEED_OUTPUT_MAX = 50;
-const ANGLE_INPUT_MIN = 0;
-const ANGLE_INPUT_MAX = 180;
+const WEIGHT_INPUT_MIN = 0;
+const WEIGHT_INPUT_MAX = 10;
+const WEIGHT_OUTPUT_MIN = 17;
+const WEIGHT_OUTPUT_MAX = 50;
+const LINE_INPUT_MIN = 0;
+const LINE_INPUT_MAX = 180;
 const CURL_INPUT_MAXABS = 10;
 const CURL_OUTPUT_MAXABS = 0.25;
 
@@ -40,19 +40,19 @@ function userAgentIsValid(req) {
   return req.headers['user-agent'].startsWith('curl') ? true : false;
 }
 
-function validateDeliveryParams(speed, angle, curl) {
-  if (R.any(isNaN)([speed, angle, curl])) {
-    return "speed, angle and curl must be numeric";
+function validateDeliveryParams(weight, line, curl) {
+  if (R.any(isNaN)([weight, line, curl])) {
+    return "weight, line and curl must be numeric";
   }
 
-  speed = Number(speed);
-  if (R.either(R.lt(R.__, SPEED_INPUT_MIN), R.gt(R.__, SPEED_INPUT_MAX))(speed)) {
-    return `speed must be between ${SPEED_INPUT_MIN} and ${SPEED_INPUT_MAX}`;
+  weight = Number(weight);
+  if (R.either(R.lt(R.__, WEIGHT_INPUT_MIN), R.gt(R.__, WEIGHT_INPUT_MAX))(weight)) {
+    return `weight must be between ${WEIGHT_INPUT_MIN} and ${WEIGHT_INPUT_MAX}`;
   }
 
-  angle = Number(angle);
-  if (R.either(R.lt(R.__, ANGLE_INPUT_MIN), R.gt(R.__, ANGLE_INPUT_MAX))(angle)) {
-    return `angle must be between ${ANGLE_INPUT_MIN} and ${ANGLE_INPUT_MAX}`;
+  line = Number(line);
+  if (R.either(R.lt(R.__, LINE_INPUT_MIN), R.gt(R.__, LINE_INPUT_MAX))(line)) {
+    return `line must be between ${LINE_INPUT_MIN} and ${LINE_INPUT_MAX}`;
   }
 
   curl = Number(curl);
@@ -92,8 +92,8 @@ function validateRequest(req, res) {
     return res.status(401).json({'error': 'Jwt token is required'});
   }
 
-  let validationError = validateDeliveryParams(req.query['speed'], 
-                                               req.query['angle'], 
+  let validationError = validateDeliveryParams(req.query['weight'], 
+                                               req.query['line'], 
                                                req.query['curl']);
   if (validationError) {
     return res.status(400).json({'error': validationError});
@@ -103,10 +103,10 @@ function validateRequest(req, res) {
   return authorization.split(' ')[1];
 }
 
-function normalizeSpeed(inputSpeed) {
-  const numberOfSteps = R.subtract(SPEED_INPUT_MAX, SPEED_INPUT_MIN);
-  const stepSize = R.divide(R.subtract(SPEED_OUTPUT_MAX, SPEED_OUTPUT_MIN), numberOfSteps);
-  return R.add(SPEED_OUTPUT_MIN, R.multiply(inputSpeed, stepSize));
+function normalizeWeight(inputWeight) {
+  const numberOfSteps = R.subtract(WEIGHT_INPUT_MAX, WEIGHT_INPUT_MIN);
+  const stepSize = R.divide(R.subtract(WEIGHT_OUTPUT_MAX, WEIGHT_OUTPUT_MIN), numberOfSteps);
+  return R.add(WEIGHT_OUTPUT_MIN, R.multiply(inputWeight, stepSize));
 }
 
 function normalizeCurl(inputCurl) {
@@ -115,16 +115,16 @@ function normalizeCurl(inputCurl) {
 }
 
 function getSimulationParams(game, deliveryParams) {
-  const speed = normalizeSpeed(deliveryParams.speed);
+  const weight = normalizeWeight(deliveryParams.weight);
   const curl = normalizeCurl(deliveryParams.curl);
   return getStones(game.game_id)
     .then(stoneResponse => {
       let simulationParams = {
         delivery: {
           team: game.team,
-          speed,
+          weight,
           curl,
-          angle: Number(deliveryParams.angle)
+          line: Number(deliveryParams.line)
         },
         // TODO: this should not be necessary, stone response should always be array
         stones: R.isEmpty(stoneResponse.data) ? [] : stoneResponse.data
