@@ -22,9 +22,9 @@ const MIN_SPEED = 0.02
 const SIMULATION_STEP_MS = 1000 / 60
 
 const getVelocity = (weight, line) => {
-  const vx = weight * Math.cos(line * Math.PI / 180)
-  const vy = -weight * Math.cos((90 - line) * Math.PI / 180)
-  return Vector.create(vx, vy)
+  let vector = Vector.create(0, R.negate(weight));
+  let angle = R.subtract(line, 90);
+  return Vector.rotate(vector, R.divide(R.multiply(angle, Math.PI), 180));
 }
 
 const createStone = (x, y, angle, team, sprites, isDelivery) => {
