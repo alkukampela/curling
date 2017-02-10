@@ -21,11 +21,10 @@ const BOUNDS = {
 const MIN_SPEED = 0.02
 const SIMULATION_STEP_MS = 1000 / 60
 
-// FIXME rename angle to line, speed to weight
-const getVelocity = (speed, angle) => {
-  const vx = speed * Math.cos(angle * Math.PI / 180)
-  const vy = -speed * Math.cos((90 - angle) * Math.PI / 180)
-  return Vector.create(vx, vy)
+const getVelocity = (weight, line) => {
+  let vector = Vector.create(0, R.negate(weight));
+  let angle = R.subtract(line, 90);
+  return Vector.rotate(vector, R.divide(R.multiply(angle, Math.PI), 180));
 }
 
 const createStone = (x, y, angle, team, sprites, isDelivery) => {
@@ -65,8 +64,8 @@ const createStones = (delivery, stones, sprites) => {
                                 sprites,
                                 true)
                       
-  Body.setAngularVelocity(delivered, delivery.curl)
-  Body.setVelocity(delivered, getVelocity(delivery.speed, delivery.angle))
+  Body.setAngularVelocity(delivered, R.negate(delivery.curl))
+  Body.setVelocity(delivered, getVelocity(delivery.weight, delivery.line))
 
   return [delivered, ...stationary]
 }
