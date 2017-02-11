@@ -4,7 +4,7 @@ from flask import Flask, request, Response
 from flask_socketio import SocketIO, join_room
 
 app = Flask(__name__)
-socketio = SocketIO(app, path='/heikin-saapas')
+socketio = SocketIO(app, path='/deliveries')
 
 @app.route('/publish/<game_id>', methods=['POST'])
 def publish(game_id):
@@ -18,4 +18,4 @@ def on_subscribe(message):
 
 if __name__ == '__main__':
     DEBUGMODE = bool(os.getenv('DEBUGMODE'))
-    socketio.run(app, host='0.0.0.0', debug=DEBUGMODE)
+    socketio.run(app, host='0.0.0.0', debug=DEBUGMODE, port=80)

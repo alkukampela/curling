@@ -9,32 +9,36 @@ defaultEntryPoints = ["http"]
   watch = true
 
 [backends]
-  [backends.gateway]
-    [backends.gateway.servers.server1]
-      url = "http://gateway:8888"
-  [backends.frontend]
-    [backends.frontend.servers.server1]
+  [backends.spa]
+    [backends.spa.servers.server_1]
       url = "http://frontend:8080"
+  [backends.gateway]
+    [backends.gateway.servers.server_1]
+      url = "http://gateway:8888"
   [backends.broadcaster]
-    [backends.broadcaster.servers.server1]
-      url = "http://localhost:9999"
+    [backends.broadcaster.servers.server_1]
+      url = "http://broadcaster"
 
 [frontends]
+  [frontends.spa]
+    backend = "spa"
+    passHostHeader = true
+      [frontends.spa.routes.route_1]
+        rule = "Path: /, /dist/{*}"
   [frontends.gateway]
     backend = "gateway"
     passHostHeader = true
-      [frontends.gateway.routes.test_1]
+      [frontends.gateway.routes.route_1]
         rule = "Path: /delivery, /games/begin, /games/join, /results, /results/{game_id}, /results/stones/{game_id}"
-  [frontends.frontend]
-    backend = "frontend"
-    passHostHeader = true
-      [frontenda.frontends.routes.test_1]
-        rule = "Path: /"
   [frontends.broadcaster]
     backend = "broadcaster"
     passHostHeader = true
-      [frontends.broadcaster.routes.test_1]
-        rule = "Path: /heikin-saapas"
+      [frontends.broadcaster.routes.route_1]
+        rule = "Path: /deliveries/"
 
 
-# https://docs.traefik.io/basics/#frontends
+################################################################
+# Web configuration backend
+################################################################
+[web]
+address = ":8088"
