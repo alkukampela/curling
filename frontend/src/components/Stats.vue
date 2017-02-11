@@ -41,41 +41,41 @@
 
 <script>
 
-import R from 'ramda';
+import R from 'ramda'
 
 export default {
   props: ['activeGame'],
   data() {
     return {
       maxEndCount: 10
-    };
+    }
   },
   computed: {
     activeEnd() {
-      return this.activeGame.end_scores.length + 1;
+      return this.activeGame.end_scores.length + 1
     },
     gameIsEnded() {
-      return this.activeGame.delivery_turn === 'none';
+      return this.activeGame.delivery_turn === 'none'
     }
   },
   methods: {
     hasTeamTurn(teamName) {
-      return teamName === this.activeGame.delivery_turn;
+      return teamName === this.activeGame.delivery_turn
     },
     getEndScore(endNumber) {
-      return this.activeGame.end_scores[endNumber-1];
+      return this.activeGame.end_scores[endNumber-1]
     },
     isEndWinner(endNumber, teamName) {
-      const endScore = this.getEndScore(endNumber);
+      const endScore = this.getEndScore(endNumber)
 
       if (!endScore) {
-        return false;
+        return false
       }
       // Having any points is enough to warrant end win
-      return R.gt(endScore[teamName], 0);
+      return R.gt(endScore[teamName], 0)
     },
     hasHammer(teamName) {
-      return teamName === this.activeGame.team_with_hammer;
+      return teamName === this.activeGame.team_with_hammer
     }
   }
 }

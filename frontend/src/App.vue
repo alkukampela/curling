@@ -6,22 +6,22 @@
 </template>
 
 <script>
-  import Intro from './components/Intro.vue';
-  import Game from './components/Game.vue';
+  import Intro from './components/Intro.vue'
+  import Game from './components/Game.vue'
 
   export default {
     name: 'app',
     data() {
       return {
         activeGame: null
-      };
+      }
     },
     methods: {
       setGame(gameId){
-        this.activeGame = gameId;
+        this.activeGame = gameId
       },
       gameInProgress() {
-        return this.activeGame !== null;
+        return this.activeGame !== null
       }
     },
     components: {
