@@ -13,4 +13,6 @@ RUN apk add --no-cache --virtual .build-deps \
 
 ADD . /code
 
+EXPOSE 80
+
 CMD ["python", "app.py"]
