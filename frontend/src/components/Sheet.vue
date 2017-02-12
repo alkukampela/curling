@@ -5,6 +5,7 @@
 
 <script>
   import { renderSimulation, renderStationary } from 'curling-physics/lib/simulation'
+  import * as io from 'socket.io-client'
 
   import redStone from '../assets/stone_red_game.png'
   import yellowStone from '../assets/stone_yellow_game.png'
