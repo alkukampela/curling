@@ -15,7 +15,7 @@ ID_LENGTH = 7
 
 SITE_BASE_URL = os.getenv('SITE_BASE_URL')
 DELIVERY_URL = SITE_BASE_URL+'/delivery'
-GAME_URL = SITE_BASE_URL+'?game_id='
+GAME_URL = SITE_BASE_URL+'/#/game/'
 
 DATASERVICE_URL = 'http://gateway:8888/data-service/'
 GAMES_ENDPOINT = DATASERVICE_URL+'games/'
@@ -47,16 +47,16 @@ PROP_DRAWN_TEAM = 'drawn_team'
 def begin_game():
     parser = reqparse.RequestParser()
     parser.add_argument('team', help='Name of your team')
-    parser.add_argument('ends', default=TOTAL_ENDS, required=False, 
+    parser.add_argument('ends', default=TOTAL_ENDS, required=False,
                         type=int, help='Number of ends in game')
-    parser.add_argument('stones', default=STONES_IN_END, required=False, 
+    parser.add_argument('stones', default=STONES_IN_END, required=False,
                         type=int, help='Number of stones in end (per team)')
 
-    args = parser.parse_args()    
+    args = parser.parse_args()
     team_name = args['team']
     total_ends = args['ends']
     stones_in_end = args['stones']
-    
+
     if not team_name:
         return Response(status=400,
                         response='Error: Team name cannot be empty.\n')
@@ -77,7 +77,7 @@ def begin_game():
         PROP_TOTAL_ENDS: total_ends,
         PROP_STONES_IN_END: stones_in_end
     }
-    
+
     response = requests.post(f'{NEW_GAME_INIT}', json = new_game)
     if (response.status_code != 201):
         return Response(status=500,
@@ -85,8 +85,8 @@ def begin_game():
 
     jwt_token = generate_jwt(game_id, new_game[PROP_DRAWN_TEAM])
 
-    instructions = get_new_game_instructions(new_game[PROP_TOTAL_ENDS], 
-                                             new_game[PROP_STONES_IN_END], 
+    instructions = get_new_game_instructions(new_game[PROP_TOTAL_ENDS],
+                                             new_game[PROP_STONES_IN_END],
                                              new_game[PROP_DRAWN_TEAM])
 
     instructions += get_delivery_instructions(jwt_token.decode('UTF-8'), game_id)
@@ -102,7 +102,7 @@ def join_game():
     parser = reqparse.RequestParser()
     parser.add_argument('team', help='Name of your team')
 
-    args = parser.parse_args()    
+    args = parser.parse_args()
     team_name = args['team']
 
     if not team_name:
@@ -121,7 +121,7 @@ def join_game():
     teams = get_teams(new_game[PROP_DRAWN_TEAM],
                       new_game[PROP_TEAM_NAME],
                       team_name)
-    
+
     game = init_new_game(game_id,
                          teams,
                          new_game[PROP_STONES_IN_END],
@@ -129,8 +129,8 @@ def join_game():
 
     create_game_in_dataservice(game_id, game)
 
-    instructions = get_joined_game_instructions(new_game[PROP_TOTAL_ENDS], 
-                                                new_game[PROP_STONES_IN_END], 
+    instructions = get_joined_game_instructions(new_game[PROP_TOTAL_ENDS],
+                                                new_game[PROP_STONES_IN_END],
                                                 joined_team)
 
     jwt_token = generate_jwt(game_id, joined_team)
@@ -159,7 +159,7 @@ def get_game_status(jwt_token):
         return Response(status=420,
                         response='{"error": "Other team has the turn"}',
                         mimetype='application/json')
-    
+
     response_data[PROP_LAST_STONE] = check_for_last_stone(
         game[PROP_STONES_DELIVERED], game[PROP_STONES_IN_END])
 
@@ -179,7 +179,7 @@ def check_in_delivery(game_id):
 
     update_game_in_dataservice(game_id, game)
 
-    return Response(status=200, 
+    return Response(status=200,
                     response=json.dumps(game),
                     mimetype='application/json')
 
@@ -199,10 +199,10 @@ def save_end_score(game_id):
     # Reset delivery counter
     game[PROP_STONES_DELIVERED][RED_TEAM] = 0
     game[PROP_STONES_DELIVERED][YELLOW_TEAM] = 0
-    
+
     # Check team that has last stone advantage
     game[PROP_TEAM_WITH_HAMMER] = get_team_with_hammer(
-                                        game[PROP_TEAM_WITH_HAMMER], 
+                                        game[PROP_TEAM_WITH_HAMMER],
                                         end_score)
 
     # Set team that has next delivery turn
@@ -217,7 +217,7 @@ def save_end_score(game_id):
 def init_new_game(game_id, teams, stones_in_end, total_ends):
     game = {}
     game[PROP_GAME_ID] = game_id
-    
+
     game[PROP_TEAMS] = teams
     game[PROP_STONES_IN_END] = stones_in_end
     game[PROP_TOTAL_ENDS] = total_ends
@@ -317,7 +317,7 @@ def get_team_instructions(team):
         return 'You\'ll be playing with yellow stones and you have the second turn.'
 
 def get_delivery_instructions(jwt_token, game_id):
-    return f'''    
+    return f'''
 Usage (replace zeroes with suitable values):
 curl -X PUT -H "Authorization: Bearer {jwt_token}" "{DELIVERY_URL}?weight=0&line=0&curl=0"
 

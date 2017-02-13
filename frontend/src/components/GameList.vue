@@ -2,17 +2,16 @@
   <div class="game-list">
     <ul>
       <li v-for="game in games">
-        <a v-on:click="selectGame(game.game_id)">
+        <router-link :to="{ path: 'game/' + game.game_id }">
           <span class="team_1">{{ game.team_1 }}</span> -
           <span class="team_2">{{ game.team_2 }}</span>
-        </a>
+        </router-link>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-
   export default {
     methods: {
       updateGames() {
@@ -22,9 +21,6 @@
         .catch(err => {
           console.error(err);
         });
-      },
-      selectGame(gameId) {
-        this.$emit('setGame', gameId);
       }
     },
     created() {
