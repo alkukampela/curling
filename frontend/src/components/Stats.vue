@@ -14,14 +14,18 @@
           <td v-for="n in maxEndCount" 
               v-bind:class="{ active: activeEnd === n && !gameIsEnded, team_1: isEndWinner(n, 'team_1')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_1 }}</span>
-            <div v-else-if="n === activeEnd && hasHammer('team_1') && !gameIsEnded" class="hammer">T</dov>
+            <div v-else-if="n === activeEnd && hasHammer('team_1') && !gameIsEnded">
+              <span class="icon-hammer"></span>
+            </div>
           </td>
         </tr>
         <tr>
           <td v-for="n in maxEndCount"  
               v-bind:class="{ active: activeEnd === n && !gameIsEnded, team_2: isEndWinner(n, 'team_2')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_2 }}</span>
-            <div v-else-if="n === activeEnd && hasHammer('team_2') && !gameIsEnded" class="hammer">T</div>
+            <div v-else-if="n === activeEnd && hasHammer('team_2') && !gameIsEnded" class="hammer">
+              <span class="icon-hammer"></span>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -42,6 +46,9 @@
 <script>
 
 import R from 'ramda'
+
+import * as ttf from '../assets/hammer.ttf'
+import * as woff from '../assets/hammer.woff'
 
 export default {
   props: ['activeGame'],
