@@ -23,17 +23,31 @@ defaultEntryPoints = ["http", "https"]
 [file]
   watch = true
 
-[backends]
-  [backends.gateway]
-    [backends.gateway.servers.server1]
-    url = "http://gateway:8888"
 
+[backends]
+  [backends.spa]
+    [backends.spa.servers.server_1]
+      url = "http://frontend:8080"
+  [backends.gateway]
+    [backends.gateway.servers.server_1]
+    url = "http://gateway:8888"
+  [backends.broadcaster]
+    [backends.broadcaster.servers.server_1]
+      url = "http://broadcaster:9400"
 
 [frontends]
+  [frontends.spa]
+    backend = "spa"
+    passHostHeader = true
+      [frontends.spa.routes.route_1]
+        rule = "Path: /, /dist/{*}"
   [frontends.gateway]
     backend = "gateway"
     passHostHeader = true
-      [frontends.gateway.routes.test_1]
-        rule = "Host: curling.goforecrew.com"
-      [frontends.gateway.routes.test_2]
+      [frontends.gateway.routes.route_1]
         rule = "Path: /delivery, /games/begin, /games/join, /results, /results/{game_id}, /results/stones/{game_id}"
+  [frontends.broadcaster]
+    backend = "broadcaster"
+    passHostHeader = true
+      [frontends.broadcaster.routes.route_1]
+        rule = "Path: /deliveries/"

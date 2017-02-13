@@ -18,4 +18,4 @@ def on_subscribe(message):
 
 if __name__ == '__main__':
     DEBUGMODE = bool(os.getenv('DEBUGMODE'))
-    socketio.run(app, host='0.0.0.0', debug=DEBUGMODE, port=80)
+    socketio.run(app, host='0.0.0.0', debug=DEBUGMODE, port=9400)

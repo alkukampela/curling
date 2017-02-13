@@ -2,9 +2,10 @@ version: '2'
 
 services:
   proxy:
-    image: traefik:v1.1.2
+    image: traefik:v1.2.0-rc1
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - "./proxy/prod.toml:/etc/traefik/traefik.toml"
 
@@ -26,11 +27,9 @@ services:
   broadcaster:
     build:
       context: ./broadcaster
-    ports:
-      - 9999:5000
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
-      - "traefik.port=5000"
+      - "traefik.port=9400"
       - "traefik.backend=broadcaster"
 
   data-service:

@@ -34,7 +34,7 @@ services:
      - DEBUGMODE=debug
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/broadcaster"
-      - "traefik.port=80"
+      - "traefik.port=9400"
       - "traefik.backend=broadcaster"
 
   data-service:

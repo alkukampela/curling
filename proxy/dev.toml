@@ -17,7 +17,7 @@ defaultEntryPoints = ["http"]
       url = "http://gateway:8888"
   [backends.broadcaster]
     [backends.broadcaster.servers.server_1]
-      url = "http://broadcaster"
+      url = "http://broadcaster:9400"
 
 [frontends]
   [frontends.spa]
