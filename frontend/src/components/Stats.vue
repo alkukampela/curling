@@ -14,7 +14,7 @@
           <td v-for="n in maxEndCount" 
               v-bind:class="{ active: activeEnd === n && !gameIsEnded, team_1: isEndWinner(n, 'team_1')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_1 }}</span>
-            <div v-else-if="n === activeEnd && hasHammer('team_1') && !gameIsEnded">
+            <div v-else-if="n === activeEnd && hasHammer('team_1') && !gameIsEnded" class="hammer">
               <span class="icon-hammer"></span>
             </div>
           </td>
