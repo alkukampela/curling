@@ -12,28 +12,29 @@
 </template>
 
 <script>
+  const BASE_URL = `${location.protocol}//${location.host}`
 
   export default {
     methods: {
       updateGames() {
-        this.$http.get('http://localhost/results').then(response => {
-          this.games = response.data;
+        this.$http.get(`${BASE_URL}/results`).then(response => {
+          this.games = response.data
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
       },
       selectGame(gameId) {
-        this.$emit('setGame', gameId);
+        this.$emit('setGame', gameId)
       }
     },
     created() {
-      this.updateGames();
+      this.updateGames()
     },
     data() {
       return {
         games: []
-      };
+      }
     }
   }
 </script>

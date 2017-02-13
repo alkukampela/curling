@@ -7,16 +7,16 @@
 
 <script>
 
-  import GameList from './GameList.vue';
+  import GameList from './GameList.vue'
 
   export default {
     props: ['activeGame'],
     data() {
-      return {};
+      return {}
     },
     methods: {
       setGame(gameId){
-        this.$emit('setGame', gameId);
+        this.$emit('setGame', gameId)
       }
     },
     components: {
