@@ -15,11 +15,11 @@
   export default {
     props: ['slug', 'name', 'stoneCount', 'deliveredCount'],
     data() {
-      return {};
+      return {}
     },
     methods: {
       isDeliveryActive(count) {
-        return count <= this.deliveredCount;
+        return count <= this.deliveredCount
       }
     }
   }

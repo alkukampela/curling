@@ -25,9 +25,11 @@
 
 <script>
 
-import Sheet from './Sheet.vue';
-import Team from './Team.vue';
-import Stats from './Stats.vue';
+import Sheet from './Sheet.vue'
+import Team from './Team.vue'
+import Stats from './Stats.vue'
+
+const BASE_URL = `${location.protocol}//${location.host}`
 
 export default {
   props: ['activeGameId'],
@@ -39,23 +41,23 @@ export default {
         "end_scores": [],
         "total_score": {}
       }
-    };
+    }
   },
   methods: {
     getGame(gameId) {
-      this.$http.get('http://localhost/results/' + gameId).then(response => {
-        this.activeGame = response.data;
+      this.$http.get(`${BASE_URL}/results/${gameId}`).then(response => {
+        this.activeGame = response.data
       })
       .catch(err => {
-        console.error(err);
-      });
+        console.error(err)
+      })
     },
     updateStats() {
-      this.getGame(this.activeGameId);
+      this.getGame(this.activeGameId)
     }
   },
   mounted() {
-    this.updateStats();
+    this.updateStats()
   },
   components: {
     Sheet,

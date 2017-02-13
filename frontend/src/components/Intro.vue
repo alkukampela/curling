@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import GameList from './GameList.vue';
+  import GameList from './GameList.vue'
 
   export default {
     components: {
