@@ -21,17 +21,17 @@
           this.games = response.data
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
       }
     },
     created() {
-      this.updateGames();
+      this.updateGames()
     },
     data() {
       return {
         games: []
-      };
+      }
     }
   }
 </script>
