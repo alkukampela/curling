@@ -1,5 +1,5 @@
 ---
-- hosts: curling
+- hosts: prod
   remote_user: ubuntu
   become: yes
 

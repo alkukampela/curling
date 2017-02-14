@@ -1,0 +1,9 @@
+---
+- hosts: prod
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+    - Bessonov.docker
+    - Bessonov.docker-compose
+    - { role: nodesource.node, nodejs_version: "7", debian_repo_version: "7.x" }
