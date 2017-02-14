@@ -1,17 +1,22 @@
 ---
 - hosts: prod
   remote_user: ubuntu
-  become: yes
 
-  roles:
-    - Bessonov.docker
-    - Bessonov.docker-compose
-
-  post_tasks:
+  tasks:
     - name: 'fetch source code'
       git:
         repo: https://github.com/alkukampela/curling.git
-        dest: /home/ubuntu/curling
+        dest: ~/curling
+
+    - name: Install frontend dependencies
+      shell: npm install
+      args:
+        chdir: ~/curling/frontend
+
+    - name: Build frontend
+      shell: npm run build
+      args:
+        chdir: ~/curling/frontend
 
     - name: 'start containers'
       command: docker-compose -f /home/ubuntu/curling/prod.yml up -d --build

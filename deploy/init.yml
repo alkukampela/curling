@@ -7,3 +7,7 @@
     - Bessonov.docker
     - Bessonov.docker-compose
     - { role: nodesource.node, nodejs_version: "7", debian_repo_version: "7.x" }
+
+  tasks:
+    - name: Add the ubuntu user to the docker group
+      user: name=ubuntu group=docker
