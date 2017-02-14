@@ -13,4 +13,4 @@ RUN apk add --no-cache --virtual .build-deps \
 
 ADD . /code
 
-CMD ["python", "app.py"]
+CMD /usr/local/bin/gunicorn -w 4 --bind 0.0.0.0:5000 app:app
