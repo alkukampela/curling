@@ -3,6 +3,9 @@
   remote_user: ubuntu
 
   tasks:
+    - name: 'stop containers'
+      command: docker-compose -f /home/ubuntu/curling/prod.yml stop
+
     - name: 'fetch source code'
       git:
         repo: https://github.com/alkukampela/curling.git
