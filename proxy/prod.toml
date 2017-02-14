@@ -11,7 +11,7 @@ defaultEntryPoints = ["http", "https"]
     [entryPoints.https.tls]
 
 [acme]
-  email = "info@foobarcurling.com"
+  email = "info@gofore.com"
   storageFile = "/etc/traefik/acme/acme.json"
   #onDemand = true
   caServer = "https://acme-staging.api.letsencrypt.org/directory"
