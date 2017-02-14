@@ -8,7 +8,7 @@ services:
       - "443:443"
     volumes:
       - "./proxy/prod.toml:/etc/traefik/traefik.toml"
-      - "/data/acme:/etc/traefik/acme"`
+      - "/data/acme:/etc/traefik/acme"
 
   gateway:
     image: traefik:v1.1.2
