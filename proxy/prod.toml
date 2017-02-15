@@ -1,21 +1,21 @@
 logLevel = "DEBUG"
 
-defaultEntryPoints = ["http"]
+defaultEntryPoints = ["http", "https"]
 [entryPoints]
   [entryPoints.http]
   address = ":80"
- #   [entryPoints.http.redirect]
- #   entryPoint = "https"
- # [entryPoints.https]
- # address = ":443"
- #   [entryPoints.https.tls]
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
 
-#[acme]
-#  email = "info@gofore.com"
-#  storageFile = "/etc/traefik/acme/acme.json"
+[acme]
+  email = "info@gofore.com"
+  storageFile = "/etc/traefik/acme/acme.json"
   #onDemand = true
   #caServer = "https://acme-staging.api.letsencrypt.org/directory"
-#  entryPoint = "https"
+  entryPoint = "https"
 
 [[acme.domains]]
   main = "curling.goforecrew.com"
