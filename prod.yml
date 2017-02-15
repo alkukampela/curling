@@ -52,7 +52,7 @@ services:
   frontend:
     image: nginx:1.11.8-alpine
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - "./frontend/index.html:/usr/share/nginx/html/index.html"
       - "./frontend/dist:/usr/share/nginx/html/dist"

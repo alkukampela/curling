@@ -27,7 +27,7 @@ defaultEntryPoints = ["http", "https"]
 [backends]
   [backends.spa]
     [backends.spa.servers.server_1]
-      url = "http://frontend:8080"
+      url = "http://frontend"
   [backends.gateway]
     [backends.gateway.servers.server_1]
     url = "http://gateway:8888"

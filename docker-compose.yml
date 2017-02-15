@@ -71,7 +71,7 @@ services:
       - ./physics:/src/physics
     labels:
       - "traefik.frontend.rule=PathPrefixStrip:/frontend"
-      - "traefik.port=80"
+      - "traefik.port=8080"
       - "traefik.backend=frontend"
 
   games:
