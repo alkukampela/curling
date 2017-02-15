@@ -1,4 +1,12 @@
 
+logLevel = "DEBUG"
+
+defaultEntryPoints = ["http"]
+[entryPoints]
+  [entryPoints.http]
+  address = ":8888"
+
+
 ################################################################
 # Docker configuration backend
 ################################################################
