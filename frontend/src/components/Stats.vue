@@ -47,9 +47,6 @@
 
 import R from 'ramda'
 
-import * as ttf from '../assets/hammer.ttf'
-import * as woff from '../assets/hammer.woff'
-
 export default {
   props: ['activeGame'],
   data() {
