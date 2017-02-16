@@ -1,0 +1,4 @@
+---
+
+- name: Scale {{ service }} service
+  command: docker-compose -f /home/ubuntu/curling/prod.yml scale {{ service }}={{ count }}

@@ -1,0 +1,9 @@
+---
+- hosts: prod
+  remote_user: ubuntu
+
+  tasks:
+  - include: tasks/scale.yml service=physics count=1
+  - include: tasks/scale.yml service=scores count=1
+  - include: tasks/scale.yml service=delivery count=1
+  - include: tasks/scale.yml service=games count=1
