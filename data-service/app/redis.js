@@ -28,6 +28,14 @@ function del(key) {
   });
 }
 
+function expire(key, minutes) {
+  return new Promise(function(resolve, reject) {
+    client.expire(key, R.multiply(minutes, 60), (err, result) => 
+      R.isNil(err) ? resolve(result) : reject(err)
+    );
+  });
+}
+
 function keys(pattern) {
   return new Promise(function(resolve, reject) {
     client.keys(pattern, (err, result) => 
@@ -56,6 +64,7 @@ module.exports = {
   set: set,
   get: get,
   del: del,
+  expire: expire,
   keys: keys,
   getFromQueue: getFromQueue,
   putToQueue: putToQueue
