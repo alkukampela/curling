@@ -47,7 +47,7 @@ module.exports = {
     ],
     alias: {
       'vue$': 'vue/dist/vue.common.js',
-      'curling-physics': path.resolve(__dirname, '../physics'),
+      'curling-physics': path.resolve(__dirname, '../physics')
     }
   },
   devServer: {
