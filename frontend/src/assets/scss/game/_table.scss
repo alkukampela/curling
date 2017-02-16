@@ -44,8 +44,30 @@ td {
   &.active {
     background-color: $blumine;
     
-    div.hammer {
-      transform: rotate(45deg);
+    .hammer {
+      font-size: 0.8em;
+      padding-top: 0.25rem;
     }
   }
 }
+
+@font-face {
+    font-family: 'hammer';
+    src: url('#{$icon-font-path}/hammer.eot');
+    src: url('#{$icon-font-path}/hammer.eot?#iefix') format('embedded-opentype'),
+         url('#{$icon-font-path}/hammer.woff') format('woff'),
+         url('#{$icon-font-path}/hammer.ttf') format('truetype'),
+         url('#{$icon-font-path}/hammer.svg#hammer') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+[class*='icon-']:before{
+	display: inline-block;
+   font-family: 'hammer';
+   font-style: normal;
+   font-weight: normal;
+   line-height: 1;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale
+}
+.icon-hammer:before{content:'\0048';}
