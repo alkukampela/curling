@@ -1,5 +1,5 @@
 <template>
-  <div id="ice-surface">
+  <div id="ice-surface" @endsLastDelivery="prepareToClearStones">
   </div>
 </template>
 
@@ -21,7 +21,7 @@
   const background = 'dist/track_cropped.png'
 
   export default {
-    props: ['activeGameId'],
+    props: ['activeGameId', 'clearStonesTimeout'],
     data() {
       return {}
     },
@@ -43,6 +43,7 @@
       })
 
       socket.on('new_delivery', (data) => {
+        window.clearTimeout(this.clearStonesTimeout)
         const { delivery, stones } = data
         renderSimulation(delivery, stones, sprites, background, iceSurface)
           .then((result) => {
@@ -52,6 +53,14 @@
             console.error(err)
           })
       })
+    },
+    methods: {
+      prepareToClearStones() {
+        console.log('hei')
+        this.clearStonesTimeout = window.setTimeout(function() {
+          console.log('timer')
+        }.bind(this), 1000);
+      }
     }
   }
 </script>

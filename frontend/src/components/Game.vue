@@ -18,7 +18,7 @@
       />
     </header>
     <content>
-      <sheet :activeGameId="activeGameId" v-on:newDelivery="updateStats" />
+      <sheet :activeGameId="activeGameId" @newDelivery="updateStats" />
     </content>
   </div>
 </template>
@@ -47,6 +47,10 @@ export default {
     getGame(gameId) {
       this.$http.get(`${BASE_URL}/results/${gameId}`).then(response => {
         this.activeGame = response.data
+        if (this.activeGame.stones_delivered.team_1 === 0 &&
+            this.activeGame.stones_delivered.team_2 === 0) {
+          this.$emit('endsLastDelivery')
+        }
       })
       .catch(err => {
         console.error(err)
