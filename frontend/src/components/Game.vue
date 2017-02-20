@@ -20,6 +20,11 @@
     <content>
       <sheet :activeGameId="activeGameId" v-on:newDelivery="updateStats" />
     </content>
+    <a class="info-button" @click="showModal = true">?</a>
+    
+    <info v-if="showModal" @close="showModal = false">
+      <p slot="body">content</p>
+    </info>
   </div>
 </template>
 
@@ -28,6 +33,7 @@
 import Sheet from './Sheet.vue'
 import Team from './Team.vue'
 import Stats from './Stats.vue'
+import Info from './Info.vue'
 
 const BASE_URL = `${location.protocol}//${location.host}`
 
@@ -62,7 +68,8 @@ export default {
   components: {
     Sheet,
     Team,
-    Stats
+    Stats,
+    Info
   }
 }
 </script>
