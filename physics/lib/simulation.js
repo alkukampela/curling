@@ -1,6 +1,8 @@
-import Matter from 'matter-js'
 import R from 'ramda'
-const { Engine, Render, World, Bodies, Body, Events, Vector, Bounds, Runner } = Matter
+import Matter from 'matter-js'
+const {
+  Engine, Render, World, Bodies, Body, Events, Vector, Bounds, Runner
+} = Matter
 
 const FRICTION = 0.015
 const RESTITUTION = 0.1
@@ -21,13 +23,14 @@ const BOUNDS = {
 const MIN_SPEED = 0.02
 const SIMULATION_STEP_MS = 1000 / 60
 
+const degToRad = angle => angle / 180 * Math.PI
+
 const getVelocity = (weight, line) => {
-  let vector = Vector.create(0, R.negate(weight));
-  let angle = R.subtract(line, 90);
-  return Vector.rotate(vector, R.divide(R.multiply(angle, Math.PI), 180));
+  let vector = Vector.create(weight, 0)
+  return Vector.rotate(vector, -degToRad(line))
 }
 
-const createStone = (x, y, angle, team, sprites, isDelivery) => {
+const createStone = ({x, y, angle, team, isDelivery}, sprites) => {
   const options = {
     frictionAir: FRICTION,
     restitution: RESTITUTION,
@@ -47,24 +50,20 @@ const createStone = (x, y, angle, team, sprites, isDelivery) => {
 }
 
 const createStationaryStones = (stones, sprites) => {
-  return stones.map(s => createStone(s.x, 
-                                     s.y, 
-                                     s.angle, 
-                                     s.team, 
-                                     sprites,
-                                     false))
+  return stones.map(s => createStone({ ...s, isDelivery: false }, sprites))
 }
 
 const createStones = (delivery, stones, sprites) => {
   const stationary = createStationaryStones(stones, sprites)
-  const delivered = createStone(0, 
-                                BOUNDS.max.y, 
-                                0, 
-                                delivery.team, 
-                                sprites,
-                                true)
-                      
-  Body.setAngularVelocity(delivered, R.negate(delivery.curl))
+  const delivered = createStone({
+    x: 0,
+    y: BOUNDS.max.y,
+    angle: 0,
+    team: delivery.team,
+    isDelivery: true
+  }, sprites)
+
+  Body.setAngularVelocity(delivered, -delivery.curl)
   Body.setVelocity(delivered, getVelocity(delivery.weight, delivery.line))
 
   return [delivered, ...stationary]
@@ -101,17 +100,16 @@ const isFinished = engine => (
   engine.world.bodies.length === 0 || !engine.world.bodies.some(isMoving)
 )
 
-
-const applyCurl  = engine => {
+const applyCurl = engine => {
   const deliveree = engine.world.bodies.find(x => x.isDelivery === true)
-  if (!deliveree || deliveree.speed < MIN_SPEED){
+  if (!deliveree || deliveree.speed < MIN_SPEED) {
     return
   }
-  const baseVector = deliveree.velocity;
+  const baseVector = deliveree.velocity
   // Base scaling is based on the amount of curl in the stone
   let scaledVector = Vector.mult(baseVector, Math.abs(deliveree.angularVelocity) / 2000)
   // Add some bonus scaling that increments towards the end
-  scaledVector = Vector.mult(scaledVector, Math.log(1/deliveree.speed + Math.E))
+  scaledVector = Vector.mult(scaledVector, Math.log(1 / deliveree.speed + Math.E))
   const directionAngle = Math.sign(deliveree.angularVelocity) * 0.5 * Math.PI
   const directedVector = Vector.rotate(scaledVector, directionAngle)
 
@@ -142,7 +140,7 @@ const createRunner = () => {
 }
 
 const createRenderer = (engine, element, background) => {
-  const renderer = Render.create({
+  return Render.create({
     element,
     engine,
     bounds: BOUNDS,
@@ -154,22 +152,20 @@ const createRenderer = (engine, element, background) => {
       wireframes: false
     }
   })
-
-  return renderer
 }
 
 const removeElementsChildren = (element) => {
-    const isEmpty = e => !e.hasChildNodes()
-    const removeChild = element => {
-      element.removeChild(element.firstChild)
-      return element
-    }
-    R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
+  const isEmpty = e => !e.hasChildNodes()
+  const removeChild = element => {
+    element.removeChild(element.firstChild)
+    return element
+  }
+  R.unless(R.isEmpty, R.until(isEmpty, removeChild))(element)
 }
 
 const renderSimulation = (delivery, stones, sprites, background, element) => {
   return new Promise((resolve, reject) => {
-    let failTimeout;
+    let failTimeout
     removeElementsChildren(element)
 
     const matterStones = createStones(delivery, stones, sprites)
@@ -177,14 +173,13 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
     const runner = createRunner()
     const renderer = createRenderer(engine, element, background)
 
-    failTimeout = setTimeout(reject, 12000);
+    failTimeout = setTimeout(reject, 12000)
 
     Events.on(renderer, 'afterRender', () => {
-      
       if (isFinished(engine)) {
-        Render.stop(renderer);
-        clearTimeout(failTimeout);
-        resolve();
+        Render.stop(renderer)
+        clearTimeout(failTimeout)
+        resolve()
       }
     })
 
@@ -194,14 +189,19 @@ const renderSimulation = (delivery, stones, sprites, background, element) => {
 }
 
 const renderStationary = (stones, sprites, background, element) => {
-    removeElementsChildren(element)
+  removeElementsChildren(element)
 
-    const matterStones = createStationaryStones(stones, sprites)
-    const engine = createEngine(matterStones)
-    const renderer = createRenderer(engine, element, background)
+  const matterStones = createStationaryStones(stones, sprites)
+  const engine = createEngine(matterStones)
+  const renderer = createRenderer(engine, element, background)
 
-    //Runner.run(runner, engine)
-    Render.run(renderer)
+  Render.run(renderer)
 }
 
-export { simulate, renderSimulation, renderStationary, STONE_RADIUS, HOUSE_RADIUS }
+export {
+  simulate,
+  renderSimulation,
+  renderStationary,
+  STONE_RADIUS,
+  HOUSE_RADIUS
+}
