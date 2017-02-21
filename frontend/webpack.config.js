@@ -29,7 +29,10 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        query: {
+          presets: ['babel-preset-es2015', 'babel-preset-stage-2'].map(require.resolve)
+        }
       },
       {
         test: /\.(png|jpg|gif|svg)$/,

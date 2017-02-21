@@ -1,5 +1,5 @@
 <template>
-  <div id="ice-surface" @endsLastDelivery="prepareToClearStones">
+  <div id="ice-surface">
   </div>
 </template>
 
@@ -20,22 +20,22 @@
   }
   const background = 'dist/track_cropped.png'
 
+  const getIceSurface = () => { return document.getElementById('ice-surface')}
+
   export default {
-    props: ['activeGameId', 'clearStonesTimeout'],
+    watch: {
+      stoneLocations: function(newLocations) {
+        renderStationary(newLocations, sprites, background, getIceSurface())
+      }
+    },
+    props: ['activeGameId', 'stoneLocations'],
     data() {
       return {}
     },
+    methods: {
+    },
     mounted() {
-      const iceSurface = document.getElementById('ice-surface')
       let game_id = this.activeGameId
-
-      this.$http.get(`${BASE_URL}/results/stones/${game_id}`).then(response => {
-        renderStationary(response.body, sprites, background, iceSurface)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-
       const socket = io.connect(BASE_URL, { path: '/deliveries'})
 
       socket.on('connect', function() {
@@ -43,9 +43,8 @@
       })
 
       socket.on('new_delivery', (data) => {
-        window.clearTimeout(this.clearStonesTimeout)
         const { delivery, stones } = data
-        renderSimulation(delivery, stones, sprites, background, iceSurface)
+        renderSimulation(delivery, stones, sprites, background, getIceSurface())
           .then((result) => {
             this.$emit('newDelivery', data)
           })
@@ -53,14 +52,6 @@
             console.error(err)
           })
       })
-    },
-    methods: {
-      prepareToClearStones() {
-        console.log('hei')
-        this.clearStonesTimeout = window.setTimeout(function() {
-          console.log('timer')
-        }.bind(this), 1000);
-      }
     }
   }
 </script>

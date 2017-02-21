@@ -18,7 +18,11 @@
       />
     </header>
     <content>
-      <sheet :activeGameId="activeGameId" @newDelivery="updateStats" />
+      <sheet 
+        :activeGameId="activeGameId"
+        :stoneLocations="stoneLocations"
+        @newDelivery="updateStats" 
+      />
     </content>
   </div>
 </template>
@@ -40,28 +44,37 @@ export default {
         "stones_delivered": {},
         "end_scores": [],
         "total_score": {}
-      }
+      },
+      stoneLocations: []
     }
   },
   methods: {
     getGame(gameId) {
       this.$http.get(`${BASE_URL}/results/${gameId}`).then(response => {
         this.activeGame = response.data
-        if (this.activeGame.stones_delivered.team_1 === 0 &&
-            this.activeGame.stones_delivered.team_2 === 0) {
-          this.$emit('endsLastDelivery')
-        }
       })
       .catch(err => {
         console.error(err)
       })
     },
+
     updateStats() {
       this.getGame(this.activeGameId)
+    },
+
+    getStones() {
+      this.$http.get(`${BASE_URL}/results/stones/${this.activeGameId}`).then(response => {
+        this.stoneLocations = response.body
+      })
+      .catch(err => {
+        console.error(err)
+      })
     }
+
   },
   mounted() {
     this.updateStats()
+    this.getStones()
   },
   components: {
     Sheet,
