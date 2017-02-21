@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th v-for="n in maxEndCount" 
-              v-bind:class="{ active: n === activeEnd, played: n < activeEnd}">
+              :class="{ active: n === activeEnd, played: n < activeEnd}">
             <span v-if="n <= activeGame.total_ends">{{ n }}</span>
           </th>
         </tr>
@@ -12,7 +12,7 @@
       <tbody>
         <tr>
           <td v-for="n in maxEndCount" 
-              v-bind:class="{ active: activeEnd === n && !gameIsEnded, team_1: isEndWinner(n, 'team_1')}">
+              :class="{ active: activeEnd === n && !gameIsEnded, team_1: isEndWinner(n, 'team_1')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_1 }}</span>
             <div v-else-if="n === activeEnd && hasHammer('team_1') && !gameIsEnded" class="hammer">
               <span class="icon-hammer"></span>
@@ -21,7 +21,7 @@
         </tr>
         <tr>
           <td v-for="n in maxEndCount"  
-              v-bind:class="{ active: activeEnd === n && !gameIsEnded, team_2: isEndWinner(n, 'team_2')}">
+              :class="{ active: activeEnd === n && !gameIsEnded, team_2: isEndWinner(n, 'team_2')}">
             <span v-if="n < activeEnd">{{ getEndScore(n).team_2 }}</span>
             <div v-else-if="n === activeEnd && hasHammer('team_2') && !gameIsEnded" class="hammer">
               <span class="icon-hammer"></span>
@@ -31,11 +31,11 @@
       </tbody>
     </table>
     <div class="turns">
-      <div class="turn team_1" v-bind:class="{ active: hasTeamTurn('team_1') }">
+      <div class="turn team_1" :class="{ active: hasTeamTurn('team_1') }">
         {{activeGame.total_score.team_1}}
         <span></span>
       </div>
-      <div class="turn team_2" v-bind:class="{ active: hasTeamTurn('team_2') }">
+      <div class="turn team_2" :class="{ active: hasTeamTurn('team_2') }">
         {{activeGame.total_score.team_2}}
         <span></span>
       </div>
