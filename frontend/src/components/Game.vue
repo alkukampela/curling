@@ -47,7 +47,7 @@ const WAIT_TIME = 10000
 let cleanUpTimeout
 
 export default {
-  props: ['activeGameId', 'cleanUpTimeout'],
+  props: ['activeGameId'],
   data() {
     return {
       activeGame: {
