@@ -1,4 +1,4 @@
-.info-button {
+.button {
   width: 4rem;
   line-height: 4rem;
   background-color: $bostonBlue;
@@ -25,7 +25,7 @@
   display: table;
   transition: opacity .3s ease;
 
-  .info-button {
+  .close {
     float: right;
     position: relative;
     width: 2rem;
@@ -33,7 +33,9 @@
     font-size: 1rem;
     bottom: auto;
     right: auto;
+    @include text-shadow-small();
   }
+
 }
 
 .modal-wrapper {
@@ -42,10 +44,10 @@
 }
 
 .modal-container {
-  width: 400px;
+  width: 650px;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color: #fff;
+  background-color: lighten($shakespeare, 35%);
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
@@ -55,6 +57,20 @@
 .modal-body {
   margin: 20px 0;
   font-family: Helvetica, Arial, sans-serif;
+
+  h1, h2 {
+    font-family: 'Bungee', Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: $cornflowerBlue;
+  }
+  h2 {
+    font-size: 1.5em;
+    padding: 0
+  }
+
+  tt {
+    font-size: 1.1em;
+  }  
 }
 
 .modal-default-button {

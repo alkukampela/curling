@@ -20,10 +20,6 @@ defaultEntryPoints = ["http", "https"]
 [[acme.domains]]
   main = "curling.goforecrew.com"
 
-[file]
-  watch = true
-
-
 [backends]
   [backends.spa]
     [backends.spa.servers.server_1]
