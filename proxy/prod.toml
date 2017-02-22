@@ -10,6 +10,9 @@ defaultEntryPoints = ["http", "https"]
   address = ":443"
     [entryPoints.https.tls]
 
+[file]
+  watch = true
+
 [acme]
   email = "info@gofore.com"
   storageFile = "/etc/traefik/acme/acme.json"
