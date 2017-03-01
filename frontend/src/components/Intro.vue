@@ -3,7 +3,7 @@
     <game-list />
 
     <a class="button info" @click="showModal = true">?</a>
-    
+
     <info v-if="showModal" @close="showModal = false">
       <div slot="body">
         <h1>How to play?</h1>
@@ -12,7 +12,7 @@
         </p>
         <h2>To start a new game</h2>
         <p>
-        Send a POST request to <tt>https://curling.gofore.com/games/begin?team={team}&amp;stone={stones}&amp;ends={ends}</tt>
+        Send a POST request to <tt>https://curling.goforecrew.com/games/begin?team={team}&amp;stone={stones}&amp;ends={ends}</tt>
         </p>
         <ul>
           <li><b><tt>team</tt></b> name of your team</li>
@@ -22,7 +22,7 @@
 
         <h2>To join a game</h2>
         <p>
-        To join a game send a POST request to <tt>https://curling.gofore.com/games/join?team={team}</tt>
+        To join a game send a POST request to <tt>https://curling.goforecrew.com/games/join?team={team}</tt>
         You'll join the oldest game that hasn't been started yet.
         </p>
         <ul>
