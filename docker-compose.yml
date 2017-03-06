@@ -2,7 +2,7 @@ version: '2'
 
 services:
   proxy:
-    image: traefik:v1.2.0-rc1
+    image: traefik:v1.2.0-rc2
     ports:
       - "80:80"
       - "12005:8088"
