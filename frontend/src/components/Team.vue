@@ -1,5 +1,6 @@
 <template>
   <div class="team">
+    <div :class="`${slug}_stat_logo stat_logo`"></div>
     <h2 :class="slug">{{ name }}</h2>
     <div class="deliveries">
       <ul :class="slug">

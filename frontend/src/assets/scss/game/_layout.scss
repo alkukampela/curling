@@ -156,3 +156,16 @@ h3 {
     }
   }
 }
+
+.stat_logo {
+  height: 40px;
+  padding-bottom: 0.75rem;
+}
+
+.team_1_stat_logo {
+  background: transparent url('./assets/logo_gofore_curling.png') no-repeat left center;
+}
+
+.team_2_stat_logo {
+  background: transparent url('./assets/logo_powered_by.png') no-repeat right center;
+}
