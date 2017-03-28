@@ -18,17 +18,37 @@
       />
     </header>
     <content>
-      <sheet 
+      <sheet
         :stoneLocations="stoneLocations"
         :deliveryEvent="deliveryEvent"
-        @newDelivery="refreshScores" 
+        @newDelivery="refreshScores"
       />
     </content>
-    <!--<a class="info-button" @click="showModal = true">?</a>
-    
-    <info v-if="showModal" @close="showModal = false">
-      <p slot="body">content</p>
-    </info>-->
+   <a class="button info" @click="showModal = true">?</a>
+   <info v-if="showModal" @close="showModal = false">
+      <div slot="body">
+        <h1>Delivery Parameters</h1>
+        <p>All parameters accept integers or decimal numbers with a dot (.) as the decimal point.</p>
+        <h2>Weight (0...10)</h2>
+        <ul>
+          <li>0 takes the stone to the hog line.</li>
+          <li>~4 takes the stone to the button.</li>
+          <li>10 is a heavy delivery</li>
+        </ul>
+        <h2>Line (degrees)</h2>
+        <ul>
+          <li>0 is straight to right</li>
+          <li>90 is straight to house</li>
+          <li>180 is straight to left</li>
+        </ul>
+        <h2>Curl (-10...10)</h2>
+        <ul>
+          <li>-10 curls fiercely to the right</li>
+          <li>0 does not curl</li>
+          <li>10 curls fiercely to the left</li>
+        </ul>
+      </div>
+    </info>
   </div>
 </template>
 
@@ -60,7 +80,8 @@ export default {
       deliveryEvent: {
         "delivery": {},
         "stones": []
-      }
+      },
+      showModal: false
     }
   },
   methods: {
