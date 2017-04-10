@@ -126,5 +126,9 @@ services:
 
   humanizer:
     image: alkukampela/humanizer
-    ports: 
+    ports:
       - 12006:8080
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/humanizer"
+      - "traefik.port=8080"
+      - "traefik.backend=humanizer"
