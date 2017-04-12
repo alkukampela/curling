@@ -13,15 +13,19 @@ const gameManager = gateway + '/games/';
 const stoneStore = gateway + '/data-service/stones/';
 const scoreCalculator = gateway + '/scores/';
 const simulator = gateway + '/physics/';
+const humanizer = gateway + '/humanizer/';
 
 const WEIGHT_INPUT_MIN = 0;
 const WEIGHT_INPUT_MAX = 10;
 const WEIGHT_OUTPUT_MIN = 17;
 const WEIGHT_OUTPUT_MAX = 50;
-const LINE_INPUT_MIN = 0;
-const LINE_INPUT_MAX = 180;
+const WEIGHT_VARIANCE = 1.0;
+const LINE_MIN = 0;
+const LINE_MAX = 180;
+const LINE_VARIANCE = 0.3;
 const CURL_INPUT_MAXABS = 10;
 const CURL_OUTPUT_MAXABS = 0.25;
+const CURL_VARIANCE = 0.02;
 
 function getGame(jwtToken) {
   console.log('getGame', jwtToken);
@@ -51,8 +55,8 @@ function validateDeliveryParams(weight, line, curl) {
   }
 
   line = Number(line);
-  if (R.either(R.lt(R.__, LINE_INPUT_MIN), R.gt(R.__, LINE_INPUT_MAX))(line)) {
-    return `line must be between ${LINE_INPUT_MIN} and ${LINE_INPUT_MAX}`;
+  if (R.either(R.lt(R.__, LINE_MIN), R.gt(R.__, LINE_MAX))(line)) {
+    return `line must be between ${LINE_MIN} and ${LINE_MAX}`;
   }
 
   curl = Number(curl);
@@ -92,8 +96,8 @@ function validateRequest(req, res) {
     return res.status(401).json({'error': 'Jwt token is required'});
   }
 
-  let validationError = validateDeliveryParams(req.query['weight'], 
-                                               req.query['line'], 
+  let validationError = validateDeliveryParams(req.query['weight'],
+                                               req.query['line'],
                                                req.query['curl']);
   if (validationError) {
     return res.status(400).json({'error': validationError});
@@ -112,6 +116,41 @@ function normalizeWeight(inputWeight) {
 function normalizeCurl(inputCurl) {
   const ratio = R.divide(CURL_INPUT_MAXABS, CURL_OUTPUT_MAXABS);
   return R.divide(inputCurl, ratio);
+}
+
+function humanizeParameters(simulationParams) {
+  const deliveryParams = simulationParams.delivery;
+  const humanizerInput = [
+    {
+      key: 'weight',
+      value: deliveryParams.weight,
+      min: WEIGHT_OUTPUT_MIN,
+      max: WEIGHT_OUTPUT_MAX,
+      variance: WEIGHT_VARIANCE
+    },
+    {
+      key: 'curl',
+      value: deliveryParams.curl,
+      min: R.negate(CURL_OUTPUT_MAXABS),
+      max: CURL_OUTPUT_MAXABS,
+      variance: CURL_VARIANCE
+    },
+    {
+      key: 'line',
+      value: deliveryParams.line,
+      min: LINE_MIN,
+      max: LINE_MAX,
+      variance: LINE_VARIANCE
+    }
+  ];
+  return axios
+    .post(humanizer, humanizerInput)
+    .then(humanizerOutput => {
+      humanizerOutput.data.forEach(param => {
+        simulationParams.delivery[param.Key] = param.Value;
+      });
+      return simulationParams;
+    })
 }
 
 function getSimulationParams(game, deliveryParams) {
@@ -189,6 +228,7 @@ app.put('/*', function(req, res) {
       }
 
       return getSimulationParams(gameResponse.data, req.query)
+        .then(simulationParams => humanizeParameters(simulationParams))
         .then(simulationParams => makeDelivery(gameResponse.data.game_id, simulationParams))
         .then(stone_locations => saveDeliveryState(gameResponse.data, stone_locations[0].data))
         .then(_ => res.status(200).json({}));

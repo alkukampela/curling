@@ -2,7 +2,7 @@ version: '2'
 
 services:
   proxy:
-    image: traefik:v1.2.0-rc2
+    image: traefik:v1.2.1
     ports:
       - "80:80"
       - "12005:8088"
@@ -10,7 +10,7 @@ services:
       - "./proxy/dev.toml:/etc/traefik/traefik.toml"
 
   gateway:
-    image: traefik:v1.1.2
+    image: traefik:v1.2.1
     ports:
       - "8888:8888"
       - "8088:8088"
@@ -123,3 +123,12 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/results"
       - "traefik.port=5000"
       - "traefik.backend=results"
+
+  humanizer:
+    image: alkukampela/humanizer
+    ports:
+      - 12006:8080
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/humanizer"
+      - "traefik.port=8080"
+      - "traefik.backend=humanizer"
