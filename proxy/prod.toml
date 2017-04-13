@@ -16,8 +16,6 @@ defaultEntryPoints = ["http", "https"]
 [acme]
   email = "info@gofore.com"
   storageFile = "/etc/traefik/acme/acme.json"
-  #onDemand = true
-  #caServer = "https://acme-staging.api.letsencrypt.org/directory"
   entryPoint = "https"
 
 [[acme.domains]]
