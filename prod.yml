@@ -95,3 +95,12 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip:/results"
       - "traefik.port=5000"
       - "traefik.backend=results"
+
+  humanizer:
+    image: alkukampela/humanizer
+    ports:
+      - 12006:8080
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/humanizer"
+      - "traefik.port=8080"
+      - "traefik.backend=humanizer"
