@@ -1,5 +1,9 @@
 <template>
   <div class="intro">
+    <a href="https://github.com/alkukampela/curling" class="fork_me">
+      <img alt="Fork me on GitHub" src="../assets/forkme_light_background.png"/>
+    </a>
+
     <game-list />
 
     <a class="button info" @click="showModal = true">?</a>
@@ -40,6 +44,7 @@
 <script>
   import GameList from './GameList.vue'
   import Info from './Info.vue'
+  import forkme from '../assets/forkme_light_background.png'
 
   export default {
     data() {
