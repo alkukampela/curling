@@ -16,7 +16,7 @@
         </p>
         <h2>To start a new game</h2>
         <p>
-        Send a POST request to <tt>https://curling.goforecrew.com/games/begin?team={team}&amp;stone={stones}&amp;ends={ends}</tt>
+        Send a POST request to <tt>https://curling.goforecrew.com/games/begin?team={team}&amp;stones={stones}&amp;ends={ends}</tt>
         </p>
         <ul>
           <li><b><tt>team</tt></b> name of your team</li>
