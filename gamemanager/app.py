@@ -2,6 +2,7 @@ import json
 import uuid
 import random
 import os
+import time
 
 import requests
 from flask import Flask, request, Response
@@ -21,6 +22,7 @@ DATASERVICE_URL = 'http://gateway:8888/data-service/'
 GAMES_ENDPOINT = DATASERVICE_URL+'games/'
 NEW_GAME_INIT = DATASERVICE_URL+'newgame/init'
 NEW_GAME_JOIN = DATASERVICE_URL+'newgame/join'
+NEW_GAME_TTL = 180 # seconds
 
 RED_TEAM = 'team_1'
 YELLOW_TEAM = 'team_2'
@@ -28,6 +30,7 @@ YELLOW_TEAM = 'team_2'
 STONES_IN_END = 5 # Per team
 TOTAL_ENDS = 4
 
+PROP_VALID_UNTIL = 'valid_until'
 PROP_GAME_ID = 'game_id'
 PROP_TEAMS = 'teams'
 PROP_STONES_IN_END = 'stones_in_end'
@@ -71,6 +74,7 @@ def begin_game():
 
     game_id = generate_new_id()
     new_game = {
+        PROP_VALID_UNTIL: time.time() + NEW_GAME_TTL,
         PROP_GAME_ID: game_id,
         PROP_TEAM_NAME: team_name,
         PROP_DRAWN_TEAM: draw_a_team(),
@@ -78,7 +82,7 @@ def begin_game():
         PROP_STONES_IN_END: stones_in_end
     }
 
-    response = requests.post(f'{NEW_GAME_INIT}', json = new_game)
+    response = requests.post(NEW_GAME_INIT, json = new_game)
     if (response.status_code != 201):
         return Response(status=500,
                         response='Error during game initialization.\n')
@@ -87,7 +91,8 @@ def begin_game():
 
     instructions = get_new_game_instructions(new_game[PROP_TOTAL_ENDS],
                                              new_game[PROP_STONES_IN_END],
-                                             new_game[PROP_DRAWN_TEAM])
+                                             new_game[PROP_DRAWN_TEAM],
+                                             NEW_GAME_TTL)
 
     instructions += get_delivery_instructions(jwt_token.decode('UTF-8'), game_id)
 
@@ -109,7 +114,7 @@ def join_game():
         return Response(status=400,
                         response='Error: Team name cannot be empty.\n')
 
-    new_game = requests.post(f'{NEW_GAME_JOIN}').json()
+    new_game = get_game_to_join()
 
     if not new_game:
         return Response(status=400,
@@ -278,6 +283,14 @@ def create_game_in_dataservice(game_id, game):
 def update_game_in_dataservice(game_id, game):
     response = requests.put(f'{GAMES_ENDPOINT}{game_id}', json = game)
 
+def get_game_to_join():
+    while True:
+        new_game = requests.post(NEW_GAME_JOIN).json()
+        if not new_game:
+            return None
+        if new_game[PROP_VALID_UNTIL] > time.time():
+            return new_game
+
 def draw_a_team():
     return YELLOW_TEAM if random.randint(0, 1) else RED_TEAM
 
@@ -293,13 +306,14 @@ def get_teams(drawn_team, init_team, join_team):
             YELLOW_TEAM: join_team
         }
 
-def get_new_game_instructions(total_ends, stones_in_end, team):
+def get_new_game_instructions(total_ends, stones_in_end, team, ttl):
     return f'''
 Hello and welcome to the amazing world of Curling!
 
 A new game was initialized with {total_ends} ends having {stones_in_end} stones in each.
 {get_team_instructions(team)}
-The game can start when your opponent joins the game.
+
+The game can start if your opponent joins the game within {ttl/60} minutes.
 '''
 
 def get_joined_game_instructions(total_ends, stones_in_end, team):
