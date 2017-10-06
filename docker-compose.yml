@@ -2,7 +2,8 @@ version: '2'
 
 services:
   proxy:
-    image: traefik:v1.2.3
+
+    image: traefik:v1.4
     ports:
       - "80:80"
       - "12005:8088"
@@ -10,7 +11,7 @@ services:
       - "./proxy/dev.toml:/etc/traefik/traefik.toml"
 
   gateway:
-    image: traefik:v1.2.3
+    image: traefik:v1.4
     ports:
       - "8888:8888"
       - "8088:8088"
